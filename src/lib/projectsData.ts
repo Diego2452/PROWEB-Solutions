@@ -16,6 +16,32 @@ export type ProjectData = {
 
 export const projectsData: ProjectData[] = [
   {
+    slug: "repuestos-jmd",
+    titleEs: "Repuestos JMD",
+    titleEn: "JMD Spare Parts",
+    descriptionEs: "E-commerce full-stack para repuestos de vehículos chinos en Costa Rica, con panel admin, catálogo dinámico y sistema de órdenes con emails automáticos.",
+    descriptionEn: "Full-stack e-commerce for Chinese vehicle spare parts in Costa Rica, featuring an admin panel, dynamic catalog and order system with automated emails.",
+    longDescEs:
+      "Diseño y desarrollo completo de Repuestos JMD, una tienda en línea especializada en repuestos para vehículos de marcas chinas (BYD, Geely, Chery, Changan, GWM, Wuling, Jetour) en Costa Rica. Construida con Next.js 14 App Router, TypeScript y Tailwind CSS, con despliegue continuo en Vercel desde GitHub. El frontend presenta un diseño oscuro profesional con hero carousel animado, mega menú de navegación con categorías, carrusel infinito tipo cinta con CSS keyframes, cards con efecto glow reactivo al mouse y sistema de paginación con selector 10/25/50/100 por página. El catálogo cuenta con filtros independientes por marca, modelo, categoría y rango de precio, donde el sidebar de filtros tiene scroll autónomo preservando sus bordes redondeados. El carrito de compras (sin login, localStorage) incluye breakdown detallado con IVA 13%, estimado de envío y campo de código promocional. Las órdenes se guardan en Supabase y disparan emails automáticos tanto al cliente como al administrador mediante Resend. El panel de administración (protegido por Supabase Auth) ofrece CRUD completo para productos, categorías, marcas y modelos, con carga de imágenes por drag-and-drop directo a Supabase Storage. El sistema i18n ES/EN y el selector de moneda CRC/USD con tipo de cambio en tiempo real completan la experiencia. La base de datos PostgreSQL en Supabase incluye compatibilidades por modelo de vehículo, permitiendo filtrar qué piezas sirven para qué auto específico.",
+    longDescEn:
+      "Full design and development of Repuestos JMD, an online store specialized in spare parts for Chinese brand vehicles (BYD, Geely, Chery, Changan, GWM, Wuling, Jetour) in Costa Rica. Built with Next.js 14 App Router, TypeScript and Tailwind CSS, with continuous deployment on Vercel from GitHub. The frontend features a professional dark design with animated hero carousel, category mega menu navigation, infinite CSS keyframes marquee ribbon, mouse-reactive glow cards and a pagination system with 10/25/50/100 per page selector. The catalog includes independent filters by brand, model, category and price range, with a sidebar that scrolls autonomously while preserving its rounded corners. The shopping cart (no login required, localStorage) includes a detailed breakdown with 13% VAT, shipping estimate and promo code input. Orders are saved to Supabase and trigger automatic emails to both client and admin via Resend. The admin panel (protected by Supabase Auth) provides full CRUD for products, categories, brands and models, with drag-and-drop image upload directly to Supabase Storage. ES/EN i18n and CRC/USD currency selector with real-time exchange rate complete the experience. The PostgreSQL database in Supabase includes vehicle model compatibility tables, enabling filtering of which parts fit which specific car.",
+    tags: [
+      "Next.js 14", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL",
+      "Supabase Auth", "Supabase Storage", "Resend", "Vercel", "React Context",
+      "E-commerce", "CRUD", "i18n", "App Router"
+    ],
+    images: [
+      "/Images/Projects/Repuestos-JMD/image-1.png",
+      "/Images/Projects/Repuestos-JMD/image-2.png",
+      "/Images/Projects/Repuestos-JMD/image-3.png",
+      "/Images/Projects/Repuestos-JMD/image-4.png",
+    ],
+    demoUrl: "https://repuestos-jmd.vercel.app",
+    codeUrl: "https://github.com/Diego2452/Repuestos-JMD",
+    year: "2026",
+    client: "JMD Repuestos",
+  },
+  {
     slug: "proweb-solutions-beta",
     titleEs: "PROWEB Solutions Beta",
     titleEn: "PROWEB Solutions Beta",
