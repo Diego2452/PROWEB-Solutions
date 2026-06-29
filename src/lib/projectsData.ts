@@ -27,9 +27,10 @@ export const projectsData: ProjectData[] = [
       "The Beta version of PROWEB Solutions is the current version, built entirely from scratch in Visual Studio Code. It uses Next.js with App Router, TypeScript, Tailwind CSS and Framer Motion. It includes advanced animations with interactive canvas particles, 3D card tilt effects on hover, an ES/EN translation system, animated typewriter in the hero, responsive navbar with mobile menu, per-project detail pages with image carousel and a high-quality professional dark design — demonstrating real expertise in modern web development from scratch.",
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "React", "Vercel", "VS Code"],
     images: [
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900&q=80",
-      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=900&q=80",
-      "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=900&q=80",
+      "/Images/Projects/PROWEB-Solutions/mi-imagen-1.png",
+      "/Images/Projects/PROWEB-Solutions/mi-imagen-2.png",
+      "/Images/Projects/PROWEB-Solutions/mi-imagen-3.png",
+      "/Images/Projects/PROWEB-Solutions/mi-imagen-4.png",
     ],
     demoUrl: "#",
     codeUrl: "#",
