@@ -4,9 +4,10 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink, Github } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
+import { TAG_ICONS } from "@/lib/tagIcons";
 
 interface ProjectCardProps {
   title: string;
@@ -17,6 +18,26 @@ interface ProjectCardProps {
   tags?: string[];
   index?: number;
   slug?: string;
+}
+
+/* ── Tag chip con ícono ─────────────────────────────────── */
+function TagChip({ tag }: { tag: string }) {
+  const icon = TAG_ICONS[tag];
+  return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/35 font-body whitespace-nowrap flex-shrink-0">
+      {icon && (
+        <img
+          src={icon}
+          alt=""
+          width={12}
+          height={12}
+          className="w-3 h-3 object-contain"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
+      )}
+      {tag}
+    </span>
+  );
 }
 
 export default function ProjectCard({
@@ -30,23 +51,26 @@ export default function ProjectCard({
   slug,
 }: ProjectCardProps) {
   const { lang } = useLang();
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef  = useRef<HTMLDivElement>(null);
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
   const [hovered, setHovered] = useState(false);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
+  const mouseX  = useMotionValue(0);
+  const mouseY  = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]),  { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]),  { stiffness: 300, damping: 30 });
+
+  const hasDemo = !!(demoUrl && demoUrl !== "#");
+  const hasCode = !!(codeUrl && codeUrl !== "#");
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    mouseX.set((e.clientX - rect.left) / rect.width  - 0.5);
+    mouseY.set((e.clientY - rect.top)  / rect.height - 0.5);
     setGlowPos({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
+      x: ((e.clientX - rect.left) / rect.width)  * 100,
+      y: ((e.clientY - rect.top)  / rect.height) * 100,
     });
   }
 
@@ -65,6 +89,7 @@ export default function ProjectCard({
       viewport={{ once: true }}
       transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       style={{ perspective: 1000 }}
+      className="h-full"
     >
       <motion.div
         ref={cardRef}
@@ -72,8 +97,9 @@ export default function ProjectCard({
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className="group relative bg-[#0A0A0A] rounded-2xl overflow-hidden border border-white/5 hover:border-[#C4281C]/25 transition-colors duration-500"
+        className="group relative flex flex-col h-full bg-[#0A0A0A] rounded-2xl overflow-hidden border border-white/5 hover:border-[#C4281C]/25 transition-colors duration-500"
       >
+        {/* Glow reactivo */}
         {hovered && (
           <div
             className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity duration-300 z-[1]"
@@ -83,9 +109,9 @@ export default function ProjectCard({
           />
         )}
 
-        {/* Clickable area — image + content (excluding buttons) */}
+        {/* Área clickeable (imagen + contenido) */}
         {detailHref ? (
-          <Link href={detailHref} className="block cursor-pointer">
+          <Link href={detailHref} className="flex flex-col flex-1 cursor-pointer">
             <CardInner
               title={title}
               description={description}
@@ -95,54 +121,61 @@ export default function ProjectCard({
             />
           </Link>
         ) : (
-          <CardInner
-            title={title}
-            description={description}
-            image={image}
-            tags={tags}
-            hovered={hovered}
-          />
+          <div className="flex flex-col flex-1">
+            <CardInner
+              title={title}
+              description={description}
+              image={image}
+              tags={tags}
+              hovered={hovered}
+            />
+          </div>
         )}
 
-        {/* Buttons — outside the Link so they don't trigger navigation */}
-        <div className="px-6 pb-6 flex gap-3 relative z-10">
-          <motion.a
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            href={demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C]/12 text-[#C4281C] text-xs font-heading font-medium border border-[#C4281C]/50 hover:bg-[#C4281C]/25 hover:border-[#C4281C] transition-all duration-200"
-          >
-            <ExternalLink size={12} />
-            {t(translations.projects.demoBtn, lang)}
-          </motion.a>
-          <motion.a
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            href={codeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/8 text-white/40 text-xs font-heading font-medium hover:border-white/20 hover:text-white transition-all duration-200"
-          >
-            <Github size={12} />
-            {t(translations.projects.codeBtn, lang)}
-          </motion.a>
+        {/* Botones — fuera del Link, siempre al fondo */}
+        <div className="px-6 pb-6 flex gap-3 relative z-10 flex-shrink-0">
+          {hasDemo && (
+            <motion.a
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C]/12 text-[#C4281C] text-xs font-heading font-medium border border-[#C4281C]/50 hover:bg-[#C4281C]/25 hover:border-[#C4281C] transition-all duration-200"
+            >
+              <ExternalLink size={12} />
+              {t(translations.projects.demoBtn, lang)}
+            </motion.a>
+          )}
+          {hasCode && (
+            <motion.a
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              href={codeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/8 text-white/40 text-xs font-heading font-medium hover:border-white/20 hover:text-white transition-all duration-200"
+            >
+              <Github size={12} />
+              {t(translations.projects.codeBtn, lang)}
+            </motion.a>
+          )}
+          {!hasDemo && !hasCode && (
+            <span className="flex items-center px-4 py-2 text-white/20 text-xs font-body">
+              No disponible
+            </span>
+          )}
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ── Inner content separated so Link wraps it cleanly ── */
+/* ── Inner: imagen + texto + tags ───────────────────────── */
 function CardInner({
-  title,
-  description,
-  image,
-  tags,
-  hovered,
+  title, description, image, tags, hovered,
 }: {
   title: string;
   description: string;
@@ -150,16 +183,52 @@ function CardInner({
   tags: string[];
   hovered: boolean;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef   = useRef<HTMLDivElement>(null);
+  const [visibleTags, setVisibleTags] = useState<string[]>(tags);
+  const [hasMore,     setHasMore]     = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const measure   = measureRef.current;
+    if (!container || !measure) return;
+
+    const maxW    = container.offsetWidth;
+    const chips   = Array.from(measure.children) as HTMLElement[];
+    const GAP     = 6;
+    const DOTS_W  = 36;
+
+    let used  = 0;
+    let count = 0;
+
+    for (let i = 0; i < chips.length; i++) {
+      const w      = chips[i].offsetWidth + (i > 0 ? GAP : 0);
+      const isLast = i === chips.length - 1;
+      const need   = used + w + (isLast ? 0 : DOTS_W + GAP);
+      if (need <= maxW) { used += w; count++; }
+      else break;
+    }
+
+    if (count < tags.length) {
+      setVisibleTags(tags.slice(0, count));
+      setHasMore(true);
+    } else {
+      setVisibleTags(tags);
+      setHasMore(false);
+    }
+  }, [tags]);
+
   return (
-    <>
-      {/* Image */}
-      <div className="relative h-52 overflow-hidden">
+    <div className="flex flex-col flex-1">
+      {/* Imagen fija */}
+      <div className="relative h-52 overflow-hidden flex-shrink-0">
         <Image
           src={image}
           alt={title}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, 50vw"
+          unoptimized={image.startsWith("http")}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/30 to-transparent" />
         {hovered && (
@@ -171,26 +240,55 @@ function CardInner({
         )}
       </div>
 
-      {/* Text content */}
-      <div className="p-6 pb-3" style={{ transform: "translateZ(20px)" }}>
+      {/* Texto */}
+      <div className="flex flex-col flex-1 p-6 pb-3" style={{ transform: "translateZ(20px)" }}>
         <h3 className="text-lg font-heading font-medium tracking-tight text-white mb-2 group-hover:text-[#C4281C] transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-sm text-white/40 font-body leading-body mb-4">{description}</p>
 
+        {/* Descripción: máx 2 líneas */}
+        <p className="text-sm text-white/40 font-body leading-body mb-4 line-clamp-2">
+          {description}
+        </p>
+
+        {/* Div de medición (off-screen) */}
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs px-2.5 py-1 rounded-full bg-white/4 border border-white/8 text-white/35 font-body"
-              >
-                {tag}
-              </span>
-            ))}
+          <div
+            ref={measureRef}
+            style={{
+              position: "fixed",
+              top: "-100vh",
+              left: 0,
+              visibility: "hidden",
+              pointerEvents: "none",
+              display: "flex",
+              gap: "6px",
+              flexWrap: "nowrap",
+            }}
+            aria-hidden="true"
+          >
+            {tags.map((tag) => <TagChip key={tag} tag={tag} />)}
           </div>
         )}
+
+        {/* Tags: 1 sola fila */}
+        {tags.length > 0 && (
+          <div
+            ref={containerRef}
+            className="flex gap-1.5 flex-nowrap overflow-hidden"
+          >
+            {visibleTags.map((tag) => <TagChip key={tag} tag={tag} />)}
+            {hasMore && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/25 flex-shrink-0">
+                •••
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Espaciador para empujar botones al fondo */}
+        <div className="flex-1" />
       </div>
-    </>
+    </div>
   );
 }

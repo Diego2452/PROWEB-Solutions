@@ -25,20 +25,27 @@ export default function ProjectsPage() {
           </p>
         </Section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projectsData.map((project, i) => (
-            <ProjectCard
-              key={project.slug}
-              title={lang === "en" ? project.titleEn : project.titleEs}
-              description={lang === "en" ? project.descriptionEn : project.descriptionEs}
-              image={project.images[0]}
-              tags={project.tags}
-              demoUrl={project.demoUrl}
-              codeUrl={project.codeUrl}
-              slug={project.slug}
-              index={i}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projectsData.map((project, i) => {
+            // Aumentamos el límite a 6 para permitir una segunda fila (row) de skills
+            const cleanTags = project.tags.length > 6 
+              ? [...project.tags.slice(0, 6), "..."] 
+              : project.tags;
+
+            return (
+              <ProjectCard
+                key={project.slug}
+                title={lang === "en" ? project.titleEn : project.titleEs}
+                description={lang === "en" ? project.descriptionEn : project.descriptionEs}
+                image={project.images[0]}
+                tags={cleanTags}
+                demoUrl={project.demoUrl}
+                codeUrl={project.codeUrl}
+                slug={project.slug}
+                index={i}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

@@ -5,15 +5,17 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ExternalLink, Github, ChevronLeft, ChevronRight, Calendar, User } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, ChevronLeft, ChevronRight, Calendar, User, Maximize2, X } from "lucide-react";
 import { getProjectBySlug } from "@/lib/projectsData";
 import { useLang } from "@/contexts/LanguageContext";
+import { TAG_ICONS } from "@/lib/tagIcons";
 
 export default function ProjectDetailPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const { lang } = useLang();
   const project = getProjectBySlug(slug);
   const [currentImage, setCurrentImage] = useState(0);
+  const [isMaximized, setIsMaximized] = useState(false); // Estado para abrir la vista grande
 
   if (!project) notFound();
 
@@ -60,7 +62,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Main image */}
+            {/* Main image container */}
             <div className="relative rounded-2xl overflow-hidden aspect-video border border-white/5 bg-[#0A0A0A] group">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -69,7 +71,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="absolute inset-0"
+                  className="absolute inset-0 cursor-zoom-in"
+                  onClick={() => setIsMaximized(true)} // Click en la imagen para agrandar
                 >
                   <Image
                     src={p.images[currentImage]}
@@ -82,6 +85,15 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </motion.div>
               </AnimatePresence>
+
+              {/* Botón flotante para ver en grande */}
+              <button
+                onClick={() => setIsMaximized(true)}
+                className="absolute top-3 right-3 w-9 h-9 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/90 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 shadow-lg backdrop-blur-sm"
+                title={lang === "en" ? "Maximize image" : "Agrandar imagen"}
+              >
+                <Maximize2 size={15} />
+              </button>
 
               {/* Carousel controls */}
               {p.images.length > 1 && (
@@ -183,20 +195,32 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
               {longDesc}
             </p>
 
-            {/* Tags */}
+            {/* Tags / Technologies */}
             <div>
               <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-3">
                 {lang === "en" ? "Technologies" : "Tecnologías"}
               </p>
               <div className="flex flex-wrap gap-2">
-                {p.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1.5 rounded-full bg-white/4 border border-white/8 text-white/50 font-body hover:border-[#C4281C]/30 hover:text-[#C4281C]/80 transition-colors duration-200"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                {p.tags.map((tag) => {
+                  const iconPath = TAG_ICONS[tag];
+                  return (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-tight px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 font-body hover:border-[#C4281C]/30 hover:text-[#C4281C]/90 transition-colors duration-200"
+                    >
+                      {iconPath && (
+                        <Image 
+                          src={iconPath} 
+                          alt={tag} 
+                          width={12} 
+                          height={12} 
+                          className="object-contain min-w-[12px] min-h-[12px]"
+                        />
+                      )}
+                      {tag}
+                    </span>
+                  );
+                })}
               </div>
             </div>
 
@@ -261,6 +285,47 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </motion.div>
 
       </div>
+
+      {/* LIGHTBOX MODAL — Vista Agrandada */}
+      <AnimatePresence>
+        {isMaximized && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setIsMaximized(false)} // Cierra al hacer clic fuera
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 md:p-10 backdrop-blur-md cursor-zoom-out"
+          >
+            {/* Botón de cierre */}
+            <button
+              onClick={() => setIsMaximized(false)}
+              className="absolute top-6 right-6 w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors z-50 shadow-2xl"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Contenedor animado de la imagen */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="relative max-w-6xl w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#060606]"
+              onClick={(e) => e.stopPropagation()} // Previene que se cierre al hacer clic en la propia imagen
+            >
+              <Image
+                src={p.images[currentImage]}
+                alt={`${title} — vista ampliada`}
+                fill
+                className="object-contain p-2 md:p-4"
+                sizes="100vw"
+                priority
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
