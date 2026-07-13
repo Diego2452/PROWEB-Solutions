@@ -1,2 +1,5 @@
 node_modules
 .env.local
+
+# Archivos de configuración del sistema de Windows
+desktop.ini
