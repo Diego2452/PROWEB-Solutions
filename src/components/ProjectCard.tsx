@@ -1,5 +1,4 @@
 "use client";
-
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,17 +9,19 @@ import { translations, t } from "@/lib/translations";
 import { TAG_ICONS } from "@/lib/tagIcons";
 
 interface ProjectCardProps {
-  title: string;
+  title:       string;
   description: string;
-  image: string;
-  demoUrl?: string;
-  codeUrl?: string;
-  tags?: string[];
-  index?: number;
-  slug?: string;
+  image:       string;
+  demoUrl?:    string;
+  codeUrl?:    string;
+  tags?:       string[];
+  index?:      number;
+  slug?:       string;
+  /** Only show the code/GitHub button for this project. Default: false */
+  showCode?:   boolean;
 }
 
-/* ── Tag chip con ícono ─────────────────────────────────── */
+/* ── Tag chip con ícono ── */
 function TagChip({ tag }: { tag: string }) {
   const icon = TAG_ICONS[tag];
   return (
@@ -44,14 +45,15 @@ export default function ProjectCard({
   title,
   description,
   image,
-  demoUrl = "#",
-  codeUrl = "#",
-  tags = [],
-  index = 0,
+  demoUrl  = "#",
+  codeUrl  = "#",
+  tags     = [],
+  index    = 0,
   slug,
+  showCode = false,
 }: ProjectCardProps) {
-  const { lang } = useLang();
-  const cardRef  = useRef<HTMLDivElement>(null);
+  const { lang }  = useLang();
+  const cardRef   = useRef<HTMLDivElement>(null);
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
   const [hovered, setHovered] = useState(false);
 
@@ -61,7 +63,7 @@ export default function ProjectCard({
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]),  { stiffness: 300, damping: 30 });
 
   const hasDemo = !!(demoUrl && demoUrl !== "#");
-  const hasCode = !!(codeUrl && codeUrl !== "#");
+  const hasCode = !!(codeUrl && codeUrl !== "#") && showCode;
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
@@ -73,7 +75,6 @@ export default function ProjectCard({
       y: ((e.clientY - rect.top)  / rect.height) * 100,
     });
   }
-
   function handleMouseLeave() {
     mouseX.set(0);
     mouseY.set(0);
@@ -109,30 +110,18 @@ export default function ProjectCard({
           />
         )}
 
-        {/* Área clickeable (imagen + contenido) */}
+        {/* Área clickeable */}
         {detailHref ? (
           <Link href={detailHref} className="flex flex-col flex-1 cursor-pointer">
-            <CardInner
-              title={title}
-              description={description}
-              image={image}
-              tags={tags}
-              hovered={hovered}
-            />
+            <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} />
           </Link>
         ) : (
           <div className="flex flex-col flex-1">
-            <CardInner
-              title={title}
-              description={description}
-              image={image}
-              tags={tags}
-              hovered={hovered}
-            />
+            <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} />
           </div>
         )}
 
-        {/* Botones — fuera del Link, siempre al fondo */}
+        {/* Botones al fondo */}
         <div className="px-6 pb-6 flex gap-3 relative z-10 flex-shrink-0">
           {hasDemo && (
             <motion.a
@@ -148,6 +137,8 @@ export default function ProjectCard({
               {t(translations.projects.demoBtn, lang)}
             </motion.a>
           )}
+
+          {/* Code button — only renders when showCode is true */}
           {hasCode && (
             <motion.a
               whileHover={{ scale: 1.04 }}
@@ -162,9 +153,10 @@ export default function ProjectCard({
               {t(translations.projects.codeBtn, lang)}
             </motion.a>
           )}
+
           {!hasDemo && !hasCode && (
             <span className="flex items-center px-4 py-2 text-white/20 text-xs font-body">
-              No disponible
+              {lang === "en" ? "Private project" : "Proyecto privado"}
             </span>
           )}
         </div>
@@ -173,15 +165,15 @@ export default function ProjectCard({
   );
 }
 
-/* ── Inner: imagen + texto + tags ───────────────────────── */
+/* ── Inner: imagen + texto + tags ── */
 function CardInner({
   title, description, image, tags, hovered,
 }: {
-  title: string;
+  title:       string;
   description: string;
-  image: string;
-  tags: string[];
-  hovered: boolean;
+  image:       string;
+  tags:        string[];
+  hovered:     boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef   = useRef<HTMLDivElement>(null);
@@ -192,35 +184,25 @@ function CardInner({
     const container = containerRef.current;
     const measure   = measureRef.current;
     if (!container || !measure) return;
-
-    const maxW    = container.offsetWidth;
-    const chips   = Array.from(measure.children) as HTMLElement[];
-    const GAP     = 6;
-    const DOTS_W  = 36;
-
+    const maxW  = container.offsetWidth;
+    const chips = Array.from(measure.children) as HTMLElement[];
+    const GAP   = 6;
+    const DOTS  = 36;
     let used  = 0;
     let count = 0;
-
     for (let i = 0; i < chips.length; i++) {
-      const w      = chips[i].offsetWidth + (i > 0 ? GAP : 0);
-      const isLast = i === chips.length - 1;
-      const need   = used + w + (isLast ? 0 : DOTS_W + GAP);
-      if (need <= maxW) { used += w; count++; }
+      const w    = chips[i].offsetWidth + (i > 0 ? GAP : 0);
+      const last = i === chips.length - 1;
+      if (used + w + (last ? 0 : DOTS + GAP) <= maxW) { used += w; count++; }
       else break;
     }
-
-    if (count < tags.length) {
-      setVisibleTags(tags.slice(0, count));
-      setHasMore(true);
-    } else {
-      setVisibleTags(tags);
-      setHasMore(false);
-    }
+    if (count < tags.length) { setVisibleTags(tags.slice(0, count)); setHasMore(true); }
+    else                     { setVisibleTags(tags);                  setHasMore(false); }
   }, [tags]);
 
   return (
     <div className="flex flex-col flex-1">
-      {/* Imagen fija */}
+      {/* Imagen */}
       <div className="relative h-52 overflow-hidden flex-shrink-0">
         <Image
           src={image}
@@ -245,48 +227,31 @@ function CardInner({
         <h3 className="text-lg font-heading font-medium tracking-tight text-white mb-2 group-hover:text-[#C4281C] transition-colors duration-300">
           {title}
         </h3>
-
-        {/* Descripción: máx 2 líneas */}
         <p className="text-sm text-white/40 font-body leading-body mb-4 line-clamp-2">
           {description}
         </p>
 
-        {/* Div de medición (off-screen) */}
+        {/* Medición off-screen */}
         {tags.length > 0 && (
           <div
             ref={measureRef}
-            style={{
-              position: "fixed",
-              top: "-100vh",
-              left: 0,
-              visibility: "hidden",
-              pointerEvents: "none",
-              display: "flex",
-              gap: "6px",
-              flexWrap: "nowrap",
-            }}
+            style={{ position:"fixed", top:"-100vh", left:0, visibility:"hidden", pointerEvents:"none", display:"flex", gap:"6px", flexWrap:"nowrap" }}
             aria-hidden="true"
           >
-            {tags.map((tag) => <TagChip key={tag} tag={tag} />)}
+            {tags.map(tag => <TagChip key={tag} tag={tag} />)}
           </div>
         )}
 
         {/* Tags: 1 sola fila */}
         {tags.length > 0 && (
-          <div
-            ref={containerRef}
-            className="flex gap-1.5 flex-nowrap overflow-hidden"
-          >
-            {visibleTags.map((tag) => <TagChip key={tag} tag={tag} />)}
+          <div ref={containerRef} className="flex gap-1.5 flex-nowrap overflow-hidden">
+            {visibleTags.map(tag => <TagChip key={tag} tag={tag} />)}
             {hasMore && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/25 flex-shrink-0">
-                •••
-              </span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/25 flex-shrink-0">•••</span>
             )}
           </div>
         )}
 
-        {/* Espaciador para empujar botones al fondo */}
         <div className="flex-1" />
       </div>
     </div>

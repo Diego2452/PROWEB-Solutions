@@ -1,5 +1,4 @@
 "use client";
-
 import Hero from "@/components/Hero";
 import Section from "@/components/Section";
 import ProjectCard from "@/components/ProjectCard";
@@ -11,13 +10,13 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useState, useRef } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
+import { projectsData } from "@/lib/projectsData";
 
 /* ── Reusable tilt + glow wrapper ── */
 function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
   const [hovered, setHovered] = useState(false);
-
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), { stiffness: 300, damping: 30 });
@@ -33,7 +32,6 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
       y: ((e.clientY - rect.top) / rect.height) * 100,
     });
   }
-
   function handleMouseLeave() {
     mouseX.set(0);
     mouseY.set(0);
@@ -64,35 +62,21 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
   );
 }
 
-/* ── Featured projects data ── */
-const featuredProjects = [
-  {
-    titleEs: "ConstruxionArq",
-    titleEn: "ConstruxionArq",
-    descEs: "Plataforma web para empresa de arquitectura y construcción. Portafolio de proyectos y servicios.",
-    descEn: "Web platform for an architecture and construction firm. Project portfolio and services.",
-    image: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",
-    tags: ["Wordpress", "SiteGround", "Elementor"],
-  },
-  {
-    titleEs: "GRAC App",
-    titleEn: "GRAC App",
-    descEs: "Aplicación móvil de gestión y seguimiento para entidades gubernamentales.",
-    descEn: "Mobile management and tracking app for government entities.",
-    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&q=80",
-    tags: ["FlutterFlow", "Flutter", "Dart"],
-  },
-];
-
 /* ── Page ── */
 export default function HomePage() {
   const { lang } = useLang();
 
+  // 2 random projects — picked once on mount, different each visit
+  const [featuredProjects] = useState(() => {
+    const shuffled = [...projectsData].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 2);
+  });
+
   const stats = [
-    { value: "4+",   label: lang === "en" ? "Projects delivered"    : "Proyectos entregados"  },
-    { value: "100%", label: lang === "en" ? "Satisfied clients"      : "Clientes satisfechos"  },
-    { value: "6+",   label: lang === "en" ? "Years of experience"    : "Años de experiencia"   },
-    { value: "CR",   label: lang === "en" ? "Based in Costa Rica"    : "Basados en Costa Rica" },
+    { value: `${projectsData.length}+`, label: lang === "en" ? "Projects delivered"  : "Proyectos entregados"  },
+    { value: "100%",                     label: lang === "en" ? "Satisfied clients"    : "Clientes satisfechos"  },
+    { value: "2+",                       label: lang === "en" ? "Years of experience"  : "Años de experiencia"   },
+    { value: "CR",                       label: lang === "en" ? "Based in Costa Rica"  : "Basados en Costa Rica" },
   ];
 
   return (
@@ -173,7 +157,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Projects preview */}
+      {/* Projects preview — 2 aleatorios */}
       <Section className="py-28 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
@@ -196,14 +180,19 @@ export default function HomePage() {
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {featuredProjects.map((project, i) => (
               <ProjectCard
-                key={project.titleEs}
+                key={project.slug}
                 title={lang === "en" ? project.titleEn : project.titleEs}
-                description={lang === "en" ? project.descEn : project.descEs}
-                image={project.image}
-                tags={project.tags}
+                description={lang === "en" ? project.descriptionEn : project.descriptionEs}
+                image={project.images[0]}
+                tags={project.tags.slice(0, 5)}
+                demoUrl={project.demoUrl}
+                codeUrl={project.codeUrl}
+                slug={project.slug}
+                showCode={project.slug === "restaurante-el-varon"}
                 index={i}
               />
             ))}

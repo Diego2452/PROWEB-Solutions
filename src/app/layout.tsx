@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import FaviconDynamic from "@/components/FaviconDynamic";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -38,6 +39,10 @@ export const metadata: Metadata = {
     description: "Soluciones Web y Móviles a la Medida",
     type: "website",
   },
+  // Favicon base — FaviconDynamic overrides at runtime based on color scheme
+  icons: {
+    icon: "/LogoBlack.png",
+  },
 };
 
 export default function RootLayout({
@@ -50,6 +55,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${nunitoSans.variable} font-body bg-dark-900 text-white antialiased`}
       >
+        <FaviconDynamic />
         <LanguageProvider>
           <Navbar />
           <main className="min-h-screen">{children}</main>
