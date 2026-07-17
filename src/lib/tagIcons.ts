@@ -32,7 +32,7 @@ export const TAG_ICONS: Record<string, string> = {
   // DB
   "MySQL":             "/images/icons/mysql.png",
   "MySQL Workbench":   "/images/icons/mysql.png",
-  "SQL Server":        "/images/icons/sqlserver.png",
+  "SQL Server":        "/images/icons/database.png",
   "phpMyAdmin":        "/images/icons/phpmyadmin.png",
   "Stored Procedures": "/images/icons/database.png",
   // Admin / tools
