@@ -16,7 +16,7 @@ export default function FaviconDynamic() {
         link.type = "image/png";
         document.head.appendChild(link); // al final = toma precedencia
       }
-      link.href = href;
+      link.href = isDark ? "/FaviconWhite.png" : "/FaviconBlack.png";
     }
 
     applyFavicon();

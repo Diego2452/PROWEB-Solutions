@@ -41,7 +41,18 @@ export const metadata: Metadata = {
   },
   // Favicon base — FaviconDynamic overrides at runtime based on color scheme
   icons: {
-    icon: "/LogoBlack.png",
+    icon: [
+      {
+        url:   "/FaviconBlack.png",   // ← antes era /LogoBlack.png
+        type:  "image/png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url:   "/FaviconWhite.png",   // ← antes era /LogoWhite.png
+        type:  "image/png",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
   },
 };
 
