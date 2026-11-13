@@ -8,6 +8,8 @@
   --red: #C4281C;
   --red-dark: #991F16;
   --red-darker: #6B1510;
+  /* iOS ring — updated every frame by LightAngleProvider */
+  --light-angle: 225deg;
 }
 
 * {
@@ -196,5 +198,44 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(90deg, transparent, rgba(196,40,28,0.6), transparent);
     animation: scan-line 3s linear infinite;
     pointer-events: none;
+  }
+
+  /* ── iOS conic-gradient border ring ──────────────────────────────────────
+   * Wraps a button with a 1.5px padding ring whose conic-gradient rotates
+   * with the light source angle (--light-angle), creating a "lit" highlight
+   * that follows the mouse (desktop) or gyroscope (mobile).
+   * Usage: <span className="ios-ring"><Button /></span>
+   * ─────────────────────────────────────────────────────────────────────── */
+  .ios-ring {
+    display: inline-flex;
+    border-radius: 9999px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--light-angle, 225deg),
+      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.00) 10%,
+      rgba(255,255,255,0.75) 15%,
+      rgba(255,255,255,0.00) 21%,
+      rgba(255,255,255,0.00) 68%,
+      rgba(255,255,255,0.28) 83%,
+      rgba(255,255,255,0.00) 90%
+    );
+  }
+
+  /* Stronger ring for the primary (red) CTA button */
+  .ios-ring-strong {
+    display: inline-flex;
+    border-radius: 9999px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--light-angle, 225deg),
+      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.00)  8%,
+      rgba(255,255,255,0.90) 14%,
+      rgba(255,255,255,0.00) 21%,
+      rgba(255,255,255,0.00) 68%,
+      rgba(255,255,255,0.40) 83%,
+      rgba(255,255,255,0.00) 90%
+    );
   }
 }

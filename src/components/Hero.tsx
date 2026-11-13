@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
-import ParticleWave from "./ParticleWave";
+import TopoCanvas from "./fx/TopoCanvas";
 import MagneticButton from "./MagneticButton";
 import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
@@ -55,21 +55,6 @@ function TypewriterCycle({ lang }: { lang: string }) {
   );
 }
 
-function GridBackground() {
-  return (
-    <motion.div
-      className="absolute inset-0"
-      animate={{ opacity: [0.015, 0.04, 0.015] }}
-      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      style={{
-        backgroundImage: `linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)`,
-        backgroundSize: "60px 60px",
-      }}
-    />
-  );
-}
-
 export default function Hero() {
   const { lang } = useLang();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -81,13 +66,10 @@ export default function Hero() {
       ref={containerRef}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6"
     >
-      {/* Subtle grid */}
-      <GridBackground />
+      {/* Topographic terrain — replaces particle wave */}
+      <TopoCanvas />
 
-      {/* Particle wave — replaces rings + orbs */}
-      <ParticleWave />
-
-      {/* Soft vignette at bottom to fade the particles */}
+      {/* Soft vignette — fades the terrain at top and bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-[1]" />
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black to-transparent pointer-events-none z-[1]" />
 
@@ -161,30 +143,36 @@ export default function Hero() {
           ))}
         </motion.div>
 
-        {/* Buttons */}
+        {/* ── Buttons ─────────────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
+          {/* Primary CTA — strong iOS ring */}
           <MagneticButton>
-            <Link
-              href="/projects"
-              className="group relative flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm overflow-hidden hover:bg-[#991F16] transition-colors duration-300"
-            >
-              <span className="relative z-10">{t(translations.hero.cta1, lang)}</span>
-              <ArrowRight size={13} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <span className="ios-ring-strong">
+              <Link
+                href="/projects"
+                className="group relative flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-colors duration-300"
+              >
+                <span>{t(translations.hero.cta1, lang)}</span>
+                <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </span>
           </MagneticButton>
 
+          {/* Secondary CTA — subtle iOS ring, glass-style */}
           <MagneticButton>
-            <Link
-              href="/contact"
-              className="px-7 py-3.5 rounded-full border border-white/10 text-white/55 font-heading font-medium text-sm hover:border-[#C4281C]/40 hover:text-white transition-all duration-300"
-            >
-              {t(translations.hero.cta2, lang)}
-            </Link>
+            <span className="ios-ring">
+              <Link
+                href="/contact"
+                className="px-7 py-3.5 rounded-full bg-white/5 backdrop-blur-sm text-white/80 font-heading font-medium text-sm hover:bg-white/10 hover:text-white transition-all duration-300"
+              >
+                {t(translations.hero.cta2, lang)}
+              </Link>
+            </span>
           </MagneticButton>
         </motion.div>
 

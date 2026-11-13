@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import FaviconDynamic from "@/components/FaviconDynamic";
+import { LightAngleProvider } from "@/components/fx/LightAngleProvider";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({
         className={`${manrope.variable} ${nunitoSans.variable} font-body bg-dark-900 text-white antialiased`}
       >
         <FaviconDynamic />
+        <LightAngleProvider />
         <LanguageProvider>
           <Navbar />
           <main className="min-h-screen">{children}</main>

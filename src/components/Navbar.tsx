@@ -63,7 +63,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative text-lg font-body transition-colors duration-200 group ${active ? "text-white" : "text-white/50 hover:text-white"
+                  className={`relative text-lg font-body transition-colors duration-200 group ${active ? "text-white" : "text-white hover:text-[#C4281C]"
                     }`}
                 >
                   {link.label}
@@ -120,7 +120,7 @@ export default function Navbar() {
               >
                 <Link
                   href={link.href}
-                  className={`text-3xl font-heading font-medium tracking-tight transition-colors ${pathname === link.href ? "text-[#C4281C]" : "text-white/60 hover:text-white"
+                  className={`text-3xl font-heading font-medium tracking-tight transition-colors ${pathname === link.href ? "text-[#C4281C]" : "text-white/90 hover:text-[#C4281C]"
                     }`}
                 >
                   {link.label}
