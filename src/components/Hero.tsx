@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Link from "next/link";
 import { ArrowDown, ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import TopoCanvas from "./fx/TopoCanvas";
 import MagneticButton from "./MagneticButton";
 import { useLang } from "@/contexts/LanguageContext";
@@ -51,9 +51,12 @@ function AnimatedHeadline({
   startDelay?: number;
   className?: string;
 }) {
+  const words = text.split(" ");
   return (
-    <span className={`inline ${className}`}>
-      {text.split(" ").map((word, i) => (
+    /* inline-flex + flex-wrap: allows background-clip:text gradient to work
+       AND wraps correctly on small screens */
+    <span className={`inline-flex flex-wrap ${className}`} style={{ gap: "0 0.28em" }}>
+      {words.map((word, i) => (
         <motion.span
           key={i}
           initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
@@ -64,11 +67,93 @@ function AnimatedHeadline({
             ease: [0.22, 1, 0.36, 1],
           }}
           className="inline-block"
-          style={{ marginRight: "0.28em" }}
         >
           {word}
         </motion.span>
       ))}
+    </span>
+  );
+}
+
+/* ── Typewriter eyebrow — cycles short brand phrases ── */
+function TypewriterEyebrow({ phrases }: { phrases: string[] }) {
+  const [display, setDisplay] = useState("");
+  const [phase, setPhase] = useState<"typing" | "hold" | "erasing">("typing");
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const text = phrases[idx];
+    if (phase === "typing") {
+      if (display.length < text.length) {
+        const t = setTimeout(() => setDisplay(text.slice(0, display.length + 1)), 65);
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => setPhase("hold"), 2200);
+      return () => clearTimeout(t);
+    }
+    if (phase === "hold") {
+      const t = setTimeout(() => setPhase("erasing"), 400);
+      return () => clearTimeout(t);
+    }
+    // erasing
+    if (display.length > 0) {
+      const t = setTimeout(() => setDisplay((d) => d.slice(0, -1)), 28);
+      return () => clearTimeout(t);
+    }
+    setIdx((i) => (i + 1) % phrases.length);
+    setPhase("typing");
+  }, [display, phase, idx, phrases]);
+
+  return (
+    <span className="inline-flex items-center">
+      {display}
+      <motion.span
+        animate={{ opacity: [1, 1, 0, 0] }}
+        transition={{ repeat: Infinity, duration: 1, times: [0, 0.5, 0.5, 1] }}
+        className="text-[#C4281C] ml-[1px] font-thin"
+      >|</motion.span>
+    </span>
+  );
+}
+
+
+/* ── Typewriter headline — cycles 3 main phrases ── */
+function TypewriterHeadline({ phrases }: { phrases: string[] }) {
+  const [display, setDisplay] = useState("");
+  const [phase, setPhase] = useState<"typing" | "hold" | "erasing">("typing");
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const text = phrases[idx];
+    if (phase === "typing") {
+      if (display.length < text.length) {
+        const t = setTimeout(() => setDisplay(text.slice(0, display.length + 1)), 55);
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => setPhase("hold"), 2500);
+      return () => clearTimeout(t);
+    }
+    if (phase === "hold") {
+      const t = setTimeout(() => setPhase("erasing"), 400);
+      return () => clearTimeout(t);
+    }
+    // erasing
+    if (display.length > 0) {
+      const t = setTimeout(() => setDisplay((d) => d.slice(0, -1)), 25);
+      return () => clearTimeout(t);
+    }
+    setIdx((i) => (i + 1) % phrases.length);
+    setPhase("typing");
+  }, [display, phase, idx, phrases]);
+
+  return (
+    <span className="inline-flex flex-wrap items-baseline">
+      <span className="text-gradient-red">{display}</span>
+      <motion.span
+        animate={{ opacity: [1, 1, 0, 0] }}
+        transition={{ repeat: Infinity, duration: 1, times: [0, 0.5, 0.5, 1] }}
+        className="text-[#C4281C] ml-[1px] font-thin"
+      >|</motion.span>
     </span>
   );
 }
@@ -111,7 +196,7 @@ export default function Hero() {
       {/* ── Parallax content layer ── */}
       <motion.div
         style={{ y: springContentY, opacity: contentOpacity }}
-        className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-36 pb-24 w-full"
+        className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-20 sm:pt-32 lg:pt-36 pb-16 sm:pb-24 w-full"
       >
         <div className="max-w-4xl">
 
@@ -124,19 +209,23 @@ export default function Hero() {
           >
             <span className="h-px w-8 bg-[#C4281C] flex-shrink-0" />
             <span className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest">
-              {copy.eyebrow}
+              <TypewriterEyebrow phrases={
+                lang === "en"
+                  ? ["Design · Development · Results", "Websites · Apps · Growth", "Built for your business"]
+                  : ["Diseño · Desarrollo · Resultados", "Sitios web · Apps · Crecimiento", "Hecho para tu negocio"]
+              } />
             </span>
           </motion.div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[82px] font-heading font-medium tracking-tight leading-[0.95] text-white mb-6">
+          <h1 className="text-[2.4rem] sm:text-5xl lg:text-7xl xl:text-[82px] font-heading font-medium tracking-tight leading-[0.95] text-white mb-6">
             <AnimatedHeadline text={copy.headline1} startDelay={0.3} />
             <br />
-            <AnimatedHeadline
-              text={copy.headline2}
-              startDelay={0.5}
-              className="text-gradient-red"
-            />
+            <TypewriterHeadline phrases={
+              lang === "en"
+                ? ["perfect digital presence.", "a website that converts.", "technology without limits."]
+                : ["presencia digital perfecta.", "un sitio web que convierte.", "tecnología sin límites."]
+            } />
           </h1>
 
           {/* Subtitle */}

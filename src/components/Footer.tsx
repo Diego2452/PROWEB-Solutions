@@ -32,10 +32,10 @@ export default function Footer() {
   ];
 
   const socials = [
-    { href: "https://github.com/diegovargas-dev",         icon: Github,        label: "GitHub"    },
-    { href: "https://instagram.com/proweb.solutions",     icon: Instagram,     label: "Instagram" },
-    { href: "mailto:diegovargas.dev@gmail.com",           icon: Mail,          label: "Email"     },
-    { href: "https://wa.me/50684058065",                  icon: MessageCircle, label: "WhatsApp"  },
+    { href: "https://github.com/diegovargas-dev",         icon: Github,        label: "GitHub",    hoverClass: "hover:bg-[#333] hover:text-white hover:border-[#555]"             },
+    { href: "https://instagram.com/proweb.solutions",     icon: Instagram,     label: "Instagram", hoverClass: "hover-instagram"                                                   },
+    { href: "mailto:diegovargas.dev@gmail.com",           icon: Mail,          label: "Email",     hoverClass: "hover:bg-[#C4281C] hover:text-white hover:border-transparent"      },
+    { href: "https://wa.me/50684058065",                  icon: MessageCircle, label: "WhatsApp",  hoverClass: "hover:bg-[#25D366] hover:text-white hover:border-[#25D366]"        },
   ];
 
   return (
@@ -64,14 +64,14 @@ export default function Footer() {
 
             {/* Social round buttons with ios-ring */}
             <div className="flex gap-2 flex-wrap">
-              {socials.map(({ href, icon: Icon, label }) => (
+              {socials.map(({ href, icon: Icon, label, hoverClass }) => (
                 <span key={label} className="ios-ring">
                   <a
                     href={href}
                     target={href.startsWith("mailto") ? undefined : "_blank"}
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="flex items-center justify-center w-9 h-9 rounded-full bg-white/5 text-white/40 hover:bg-[#C4281C] hover:text-white transition-all duration-200"
+                    className={`flex items-center justify-center w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/[0.08] text-white/60 ${hoverClass} transition-all duration-200`}
                   >
                     <Icon size={15} />
                   </a>

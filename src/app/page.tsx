@@ -12,6 +12,82 @@ import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
 import { projectsData } from "@/lib/projectsData";
 
+/* ── Scroll Story: sticky scroll-driven text section ── */
+function StoryLine({
+  scrollYProgress,
+  label,
+  phrase,
+  start,
+  end,
+}: {
+  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+  label: string;
+  phrase: string;
+  start: number;
+  end: number;
+}) {
+  const opacity = useTransform(
+    scrollYProgress,
+    [start, start + 0.1, end - 0.1, end],
+    [0, 1, 1, 0]
+  );
+  const y = useTransform(
+    scrollYProgress,
+    [start, start + 0.1, end - 0.08, end],
+    ["48px", "0px", "0px", "-32px"]
+  );
+  const scale = useTransform(
+    scrollYProgress,
+    [start, start + 0.1, end - 0.08, end],
+    [0.95, 1, 1, 0.97]
+  );
+  return (
+    <motion.div
+      style={{ opacity, y, scale }}
+      className="absolute inset-0 flex flex-col items-center justify-center px-8 lg:px-24 text-center"
+    >
+      <p className="text-[9px] font-heading tracking-[0.45em] text-[#C4281C]/60 uppercase mb-6">{label}</p>
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-heading font-medium tracking-tight text-white leading-tight">
+        {phrase}
+      </h2>
+    </motion.div>
+  );
+}
+
+function ScrollStory({ lang }: { lang: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+
+  const stories =
+    lang === "en"
+      ? [
+          { label: "Design",    phrase: "Every pixel\ncarries a promise.",              start: 0,    end: 0.36 },
+          { label: "Code",      phrase: "Every line of code\nis a commitment.",          start: 0.33, end: 0.68 },
+          { label: "Result",    phrase: "Every client\ngets results.",                   start: 0.65, end: 1.0  },
+        ]
+      : [
+          { label: "Diseño",    phrase: "Cada píxel\nlleva una promesa.",               start: 0,    end: 0.36 },
+          { label: "Código",    phrase: "Cada línea de código\nes un compromiso.",       start: 0.33, end: 0.68 },
+          { label: "Resultado", phrase: "Cada cliente\nobtiene resultados.",             start: 0.65, end: 1.0  },
+        ];
+
+  return (
+    /* Tall outer wrapper — scroll through this while content is pinned */
+    <div ref={ref} style={{ height: "250vh" }}>
+      <div className="sticky top-0 h-screen overflow-hidden bg-[#060606] border-t border-white/[0.03]">
+        {/* Subtle radial halo */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(196,40,28,0.06),transparent)] pointer-events-none" />
+        {stories.map((s, i) => (
+          <StoryLine key={i} scrollYProgress={scrollYProgress} {...s} phrase={s.phrase.replace(/\n/g, "\n")} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ── Reusable tilt + glow wrapper ── */
 function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -119,6 +195,9 @@ export default function HomePage() {
       />
 
       <Hero />
+
+      {/* ── Scroll story — sticky scroll-driven manifesto ── */}
+      <ScrollStory lang={lang} />
 
       {/* ── About preview ── */}
       <Section className="py-28 border-t border-white/5">

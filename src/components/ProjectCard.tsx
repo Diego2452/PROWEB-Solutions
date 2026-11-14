@@ -136,7 +136,7 @@ export default function ProjectCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C]/12 text-[#C4281C] text-xs font-heading font-medium hover:bg-[#C4281C]/25 transition-all duration-200"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C] text-white text-xs font-heading font-medium hover:bg-[#991F16] transition-all duration-200"
                 >
                   <ExternalLink size={12} />
                   {t(translations.projects.demoBtn, lang)}
