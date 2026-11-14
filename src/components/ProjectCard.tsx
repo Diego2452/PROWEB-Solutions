@@ -8,6 +8,21 @@ import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
 import { TAG_ICONS } from "@/lib/tagIcons";
 
+/* ── Slug → logo mapping ─────────────────────────────────────────────────── */
+const SLUG_LOGOS: Record<string, string> = {
+  "sysrrhh-mideplan":             "/Images/Project-Logos/SYSRRHH_Logo.png",
+  "construxion-arq-nextjs":       "/Images/Project-Logos/ConstruxionARQ_Logo.png",
+  "construxion-arq-wordpress":    "/Images/Project-Logos/ConstruxionARQ_Logo.png",
+  "repuestos-jmd":                "/Images/Project-Logos/JMDRepuestos_Logo.png",
+  "medallotour":                  "/Images/Project-Logos/MedalloTour_Logo.png",
+  "ruta218":                      "/Images/Project-Logos/Ruta218_EscuelaDeManejo_Logo.png",
+  "proweb-solutions-next.js":     "/Images/Project-Logos/PROWEB_Logo.png",
+  "proweb-solutions-squarespace": "/Images/Project-Logos/PROWEB_Logo.png",
+  "grac-app":                     "/Images/Project-Logos/ConcejoDeDistrito_Logo.png",
+  "mayresa":                      "/Images/Project-Logos/Mayresa_Logo.png",
+  "restaurante-el-varon":         "/Images/Project-Logos/ElVaron_Logo.png",
+};
+
 interface ProjectCardProps {
   title:       string;
   description: string;
@@ -21,22 +36,24 @@ interface ProjectCardProps {
   showCode?:   boolean;
 }
 
-/* ── Tag chip con ícono ── */
+/* ── Tag chip con iOS ring ── */
 function TagChip({ tag }: { tag: string }) {
   const icon = TAG_ICONS[tag];
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/35 font-body whitespace-nowrap flex-shrink-0">
-      {icon && (
-        <img
-          src={icon}
-          alt=""
-          width={12}
-          height={12}
-          className="w-3 h-3 object-contain"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-        />
-      )}
-      {tag}
+    <span className="ios-ring-tag">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[11px] text-white/35 font-body whitespace-nowrap">
+        {icon && (
+          <img
+            src={icon}
+            alt=""
+            width={12}
+            height={12}
+            className="w-3 h-3 object-contain"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        )}
+        {tag}
+      </span>
     </span>
   );
 }
@@ -64,6 +81,7 @@ export default function ProjectCard({
 
   const hasDemo = !!(demoUrl && demoUrl !== "#");
   const hasCode = !!(codeUrl && codeUrl !== "#") && showCode;
+  const logo    = slug ? SLUG_LOGOS[slug] : undefined;
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
@@ -92,88 +110,92 @@ export default function ProjectCard({
       style={{ perspective: 1000 }}
       className="h-full"
     >
-      <motion.div
-        ref={cardRef}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={handleMouseLeave}
-        className="group relative flex flex-col h-full bg-[#0A0A0A] rounded-2xl overflow-hidden border border-white/5 hover:border-[#C4281C]/25 transition-colors duration-500"
-      >
-        {/* Glow reactivo */}
-        {hovered && (
-          <div
-            className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity duration-300 z-[1]"
-            style={{
-              background: `radial-gradient(300px circle at ${glowPos.x}% ${glowPos.y}%, rgba(196,40,28,0.12), transparent 70%)`,
-            }}
-          />
-        )}
+      {/* iOS ring wrapper — provides the light-aware border glow */}
+      <div className="ios-ring-card h-full">
+        <motion.div
+          ref={cardRef}
+          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={handleMouseLeave}
+          className="group relative flex flex-col h-full bg-[#0A0A0A] rounded-[20px] overflow-hidden border border-white/5 hover:border-[#C4281C]/25 transition-colors duration-500"
+        >
+          {/* Glow reactivo */}
+          {hovered && (
+            <div
+              className="absolute inset-0 pointer-events-none rounded-[20px] transition-opacity duration-300 z-[1]"
+              style={{
+                background: `radial-gradient(300px circle at ${glowPos.x}% ${glowPos.y}%, rgba(196,40,28,0.12), transparent 70%)`,
+              }}
+            />
+          )}
 
-        {/* Área clickeable */}
-        {detailHref ? (
-          <Link href={detailHref} className="flex flex-col flex-1 cursor-pointer">
-            <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} />
-          </Link>
-        ) : (
-          <div className="flex flex-col flex-1">
-            <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} />
+          {/* Área clickeable */}
+          {detailHref ? (
+            <Link href={detailHref} className="flex flex-col flex-1 cursor-pointer">
+              <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} logo={logo} />
+            </Link>
+          ) : (
+            <div className="flex flex-col flex-1">
+              <CardInner title={title} description={description} image={image} tags={tags} hovered={hovered} logo={logo} />
+            </div>
+          )}
+
+          {/* Botones al fondo */}
+          <div className="px-6 pb-6 flex gap-3 relative z-10 flex-shrink-0">
+            {hasDemo && (
+              <motion.a
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                href={demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C]/12 text-[#C4281C] text-xs font-heading font-medium border border-[#C4281C]/50 hover:bg-[#C4281C]/25 hover:border-[#C4281C] transition-all duration-200"
+              >
+                <ExternalLink size={12} />
+                {t(translations.projects.demoBtn, lang)}
+              </motion.a>
+            )}
+
+            {/* Code button — only renders when showCode is true */}
+            {hasCode && (
+              <motion.a
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                href={codeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/8 text-white/40 text-xs font-heading font-medium hover:border-white/20 hover:text-white transition-all duration-200"
+              >
+                <Github size={12} />
+                {t(translations.projects.codeBtn, lang)}
+              </motion.a>
+            )}
+
+            {!hasDemo && !hasCode && (
+              <span className="flex items-center px-4 py-2 text-white/20 text-xs font-body">
+                {lang === "en" ? "Private project" : "Proyecto privado"}
+              </span>
+            )}
           </div>
-        )}
-
-        {/* Botones al fondo */}
-        <div className="px-6 pb-6 flex gap-3 relative z-10 flex-shrink-0">
-          {hasDemo && (
-            <motion.a
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#C4281C]/12 text-[#C4281C] text-xs font-heading font-medium border border-[#C4281C]/50 hover:bg-[#C4281C]/25 hover:border-[#C4281C] transition-all duration-200"
-            >
-              <ExternalLink size={12} />
-              {t(translations.projects.demoBtn, lang)}
-            </motion.a>
-          )}
-
-          {/* Code button — only renders when showCode is true */}
-          {hasCode && (
-            <motion.a
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              href={codeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/8 text-white/40 text-xs font-heading font-medium hover:border-white/20 hover:text-white transition-all duration-200"
-            >
-              <Github size={12} />
-              {t(translations.projects.codeBtn, lang)}
-            </motion.a>
-          )}
-
-          {!hasDemo && !hasCode && (
-            <span className="flex items-center px-4 py-2 text-white/20 text-xs font-body">
-              {lang === "en" ? "Private project" : "Proyecto privado"}
-            </span>
-          )}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
 
-/* ── Inner: imagen + texto + tags ── */
+/* ── Inner: imagen + logo + texto + tags ── */
 function CardInner({
-  title, description, image, tags, hovered,
+  title, description, image, tags, hovered, logo,
 }: {
   title:       string;
   description: string;
   image:       string;
   tags:        string[];
   hovered:     boolean;
+  logo?:       string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef   = useRef<HTMLDivElement>(null);
@@ -224,6 +246,28 @@ function CardInner({
 
       {/* Texto */}
       <div className="flex flex-col flex-1 p-6 pb-3" style={{ transform: "translateZ(20px)" }}>
+
+        {/* Logo badge — floats up to overlap the image/text boundary */}
+        {logo && (
+          <div className="relative -mt-10 mb-3 z-10 flex">
+            <div className="ios-ring-card" style={{ borderRadius: '14px' }}>
+              <div
+                className="w-11 h-11 bg-[#111] overflow-hidden flex items-center justify-center shadow-lg"
+                style={{ borderRadius: '13px' }}
+              >
+                <img
+                  src={logo}
+                  alt=""
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-contain p-1.5"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         <h3 className="text-lg font-heading font-medium tracking-tight text-white mb-2 group-hover:text-[#C4281C] transition-colors duration-300">
           {title}
         </h3>
@@ -247,7 +291,9 @@ function CardInner({
           <div ref={containerRef} className="flex gap-1.5 flex-nowrap overflow-hidden">
             {visibleTags.map(tag => <TagChip key={tag} tag={tag} />)}
             {hasMore && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/8 text-[11px] text-white/25 flex-shrink-0">•••</span>
+              <span className="ios-ring-tag">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-white/[0.05] text-[11px] text-white/25 flex-shrink-0">•••</span>
+              </span>
             )}
           </div>
         )}

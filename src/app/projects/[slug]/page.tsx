@@ -10,12 +10,27 @@ import { getProjectBySlug } from "@/lib/projectsData";
 import { useLang } from "@/contexts/LanguageContext";
 import { TAG_ICONS } from "@/lib/tagIcons";
 
+/* ── Slug → logo mapping ─────────────────────────────────────────────────── */
+const SLUG_LOGOS: Record<string, string> = {
+  "sysrrhh-mideplan":             "/Images/Project-Logos/SYSRRHH_Logo.png",
+  "construxion-arq-nextjs":       "/Images/Project-Logos/ConstruxionARQ_Logo.png",
+  "construxion-arq-wordpress":    "/Images/Project-Logos/ConstruxionARQ_Logo.png",
+  "repuestos-jmd":                "/Images/Project-Logos/JMDRepuestos_Logo.png",
+  "medallotour":                  "/Images/Project-Logos/MedalloTour_Logo.png",
+  "ruta218":                      "/Images/Project-Logos/Ruta218_EscuelaDeManejo_Logo.png",
+  "proweb-solutions-next.js":     "/Images/Project-Logos/PROWEB_Logo.png",
+  "proweb-solutions-squarespace": "/Images/Project-Logos/PROWEB_Logo.png",
+  "grac-app":                     "/Images/Project-Logos/ConcejoDeDistrito_Logo.png",
+  "mayresa":                      "/Images/Project-Logos/Mayresa_Logo.png",
+  "restaurante-el-varon":         "/Images/Project-Logos/ElVaron_Logo.png",
+};
+
 export default function ProjectDetailPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const { lang } = useLang();
   const project = getProjectBySlug(slug);
   const [currentImage, setCurrentImage] = useState(0);
-  const [isMaximized, setIsMaximized] = useState(false); // Estado para abrir la vista grande
+  const [isMaximized, setIsMaximized] = useState(false);
 
   if (!project) notFound();
 
@@ -24,6 +39,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
   const title       = lang === "en" ? p.titleEn       : p.titleEs;
   const description = lang === "en" ? p.descriptionEn : p.descriptionEs;
   const longDesc    = lang === "en" ? p.longDescEn    : p.longDescEs;
+
+  const logo = SLUG_LOGOS[slug];
 
   function prev() {
     setCurrentImage((i) => (i === 0 ? p.images.length - 1 : i - 1));
@@ -72,7 +89,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="absolute inset-0 cursor-zoom-in"
-                  onClick={() => setIsMaximized(true)} // Click en la imagen para agrandar
+                  onClick={() => setIsMaximized(true)}
                 >
                   <Image
                     src={p.images[currentImage]}
@@ -162,8 +179,29 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col gap-6"
           >
-            {/* Title */}
+            {/* Title — with optional logo above */}
             <div>
+              {/* Project logo */}
+              {logo && (
+                <div className="mb-4">
+                  <div className="ios-ring-card inline-block" style={{ borderRadius: '16px' }}>
+                    <div
+                      className="w-14 h-14 bg-[#111] overflow-hidden flex items-center justify-center shadow-lg"
+                      style={{ borderRadius: '15px' }}
+                    >
+                      <img
+                        src={logo}
+                        alt=""
+                        width={56}
+                        height={56}
+                        className="w-full h-full object-contain p-2"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-3">
                 {lang === "en" ? "Project" : "Proyecto"}
               </p>
@@ -204,20 +242,19 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                 {p.tags.map((tag) => {
                   const iconPath = TAG_ICONS[tag];
                   return (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-tight px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 font-body hover:border-[#C4281C]/30 hover:text-[#C4281C]/90 transition-colors duration-200"
-                    >
-                      {iconPath && (
-                        <Image 
-                          src={iconPath} 
-                          alt={tag} 
-                          width={12} 
-                          height={12} 
-                          className="object-contain min-w-[12px] min-h-[12px]"
-                        />
-                      )}
-                      {tag}
+                    <span key={tag} className="ios-ring-tag">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-tight px-3 py-1.5 rounded-full bg-white/5 text-white/70 font-body hover:text-[#C4281C]/90 transition-colors duration-200">
+                        {iconPath && (
+                          <img
+                            src={iconPath}
+                            alt={tag}
+                            width={12}
+                            height={12}
+                            className="object-contain min-w-[12px] min-h-[12px]"
+                          />
+                        )}
+                        {tag}
+                      </span>
                     </span>
                   );
                 })}
@@ -286,7 +323,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
       </div>
 
-      {/* LIGHTBOX MODAL — Vista Agrandada */}
+      {/* LIGHTBOX MODAL */}
       <AnimatePresence>
         {isMaximized && (
           <motion.div
@@ -294,10 +331,9 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            onClick={() => setIsMaximized(false)} // Cierra al hacer clic fuera
+            onClick={() => setIsMaximized(false)}
             className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 md:p-10 backdrop-blur-md cursor-zoom-out"
           >
-            {/* Botón de cierre */}
             <button
               onClick={() => setIsMaximized(false)}
               className="absolute top-6 right-6 w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors z-50 shadow-2xl"
@@ -305,14 +341,13 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
               <X size={20} />
             </button>
 
-            {/* Contenedor animado de la imagen */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative max-w-6xl w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#060606]"
-              onClick={(e) => e.stopPropagation()} // Previene que se cierre al hacer clic en la propia imagen
+              onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={p.images[currentImage]}

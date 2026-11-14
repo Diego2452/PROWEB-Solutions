@@ -3,7 +3,11 @@ import { useState, useMemo } from "react";
 import ProjectCard from "@/components/ProjectCard";
 import Section from "@/components/Section";
 import AnimatedText from "@/components/AnimatedText";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Search, ChevronLeft, ChevronRight,
+  Layers, ShoppingCart, Server, Globe, Smartphone,
+  Briefcase, UtensilsCrossed, GraduationCap, MapPin,
+} from "lucide-react";
 import { useLang } from "@/contexts/LanguageContext";
 import { translations, t } from "@/lib/translations";
 import { projectsData, CATEGORY_LABELS, type ProjectCategory } from "@/lib/projectsData";
@@ -13,6 +17,19 @@ const CATEGORIES: ProjectCategory[] = [
   "portfolio", "restaurante", "escuela", "turismo",
 ];
 
+/* Lucide icon per category */
+const CAT_ICONS: Record<ProjectCategory, React.ReactNode> = {
+  todos:       <Layers        size={12} />,
+  ecommerce:   <ShoppingCart  size={12} />,
+  sistema:     <Server        size={12} />,
+  web:         <Globe         size={12} />,
+  movil:       <Smartphone    size={12} />,
+  portfolio:   <Briefcase     size={12} />,
+  restaurante: <UtensilsCrossed size={12} />,
+  escuela:     <GraduationCap size={12} />,
+  turismo:     <MapPin        size={12} />,
+};
+
 const PAGE_SIZE = 12;
 
 export default function ProjectsPage() {
@@ -21,7 +38,6 @@ export default function ProjectsPage() {
   const [search,  setSearch]  = useState("");
   const [page,    setPage]    = useState(1);
 
-  // Sort newest first, then filter by category + search
   const filtered = useMemo(() => {
     const sorted = [...projectsData].sort((a, b) => b.yearSort - a.yearSort);
     return sorted.filter(p => {
@@ -84,8 +100,8 @@ export default function ProjectsPage() {
           />
         </div>
 
-        {/* Category filter */}
-        <div className="flex flex-wrap gap-2 mb-10">
+        {/* Category filter — horizontal scroll, no wrap */}
+        <div className="flex gap-2 mb-10 overflow-x-auto scrollbar-hide pb-2">
           {CATEGORIES.map(cat => {
             const isActive = active === cat;
             const label    = CATEGORY_LABELS[cat][lang === "en" ? "en" : "es"];
@@ -93,19 +109,21 @@ export default function ProjectsPage() {
               ? projectsData.length
               : projectsData.filter(p => p.category === cat).length;
             return (
-              <button
-                key={cat}
-                onClick={() => handleCategory(cat)}
-                className="px-4 py-1.5 rounded-full text-sm font-heading font-medium border transition-all duration-200"
-                style={{
-                  backgroundColor: isActive ? "#C4281C"              : "transparent",
-                  borderColor:     isActive ? "#C4281C"              : "rgba(255,255,255,0.1)",
-                  color:           isActive ? "#ffffff"              : "rgba(255,255,255,0.45)",
-                }}
-              >
-                {label}
-                <span className="ml-1.5 text-xs opacity-60">({count})</span>
-              </button>
+              /* iOS ring wrapper — flex-shrink-0 prevents squishing */
+              <span key={cat} className="ios-ring-tag flex-shrink-0">
+                <button
+                  onClick={() => handleCategory(cat)}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-heading font-medium transition-all duration-200 whitespace-nowrap"
+                  style={{
+                    backgroundColor: isActive ? "#C4281C"              : "transparent",
+                    color:           isActive ? "#ffffff"              : "rgba(255,255,255,0.45)",
+                  }}
+                >
+                  {CAT_ICONS[cat]}
+                  {label}
+                  <span className="ml-0.5 text-xs opacity-60">({count})</span>
+                </button>
+              </span>
             );
           })}
         </div>
@@ -146,7 +164,7 @@ export default function ProjectsPage() {
           </p>
         )}
 
-        {/* Pagination — only shows when more than PAGE_SIZE (12) projects */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-end gap-3">
             <span className="text-xs text-white/30 font-body mr-2">

@@ -41,16 +41,19 @@ function makeNoise(seed = 2026) {
 }
 
 /* ─── Config ─────────────────────────────────────────────────────────────── */
-const CELL  = 8;     // grid cell size in px
-const LEVELS = 18;   // number of iso-contour levels
-const SPEED  = 0.012; // time increment per second (slow ambient drift)
+const CELL    = 8;      // grid cell size in px
+const LEVELS  = 18;     // number of iso-contour levels
+const SPEED   = 0.012;  // time increment per second (slow ambient drift)
 
-/* ─── PROWEB line palette ────────────────────────────────────────────────── */
-//  Every 4th level  → major white line
-//  Every 7th level  → red accent line
-//  Alternating rest → two shades of subtle white
+/* Terrain deformation (crater effect) */
+const DEFORM_RADIUS   = 90;   // px — Gaussian crater radius
+const DEFORM_STRENGTH = 0.55; // depth of depression
+
+/* ─── White-only line palette (no red) ───────────────────────────────────── */
+//  Every 4th level  → major white line (bright)
+//  Even levels      → sub-major white line
+//  Odd levels       → minor white line (very subtle)
 const lineStyle = (l: number): { width: number; color: string } => {
-  if (l % 7 === 3)  return { width: 1.3, color: "rgba(196,40,28,0.5)" };   // red accent
   if (l % 4 === 0)  return { width: 2.0, color: "rgba(255,255,255,0.65)" }; // major
   if (l % 2 === 0)  return { width: 1.0, color: "rgba(255,255,255,0.22)" }; // sub-major
   return              { width: 1.0, color: "rgba(255,255,255,0.13)" };       // minor
@@ -58,11 +61,12 @@ const lineStyle = (l: number): { width: number; color: string } => {
 
 /* ─── Component ──────────────────────────────────────────────────────────── */
 export default function TopoCanvas() {
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const tRef       = useRef(0);
-  const lastRef    = useRef(0);
-  const mouseRef   = useRef({ normX: 0, normY: 0, targetX: 0, targetY: 0 });
-  const noiseRef   = useRef<ReturnType<typeof makeNoise> | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const tRef      = useRef(0);
+  const lastRef   = useRef(0);
+  /* x/y: smoothed position | tx/ty: raw mouse target | strength: 0→1 */
+  const mouseRef  = useRef({ x: 0, y: 0, tx: 0, ty: 0, strength: 0, tStrength: 0 });
+  const noiseRef  = useRef<ReturnType<typeof makeNoise> | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -102,19 +106,35 @@ export default function TopoCanvas() {
       const rows = Math.ceil(h / CELL) + 1;
       const t    = tRef.current;
 
-      /* Mouse parallax offsets (normalised -1…+1) */
-      const mx = mouseRef.current.normX * 0.12;
-      const my = mouseRef.current.normY * 0.09;
+      /* Mouse terrain deformation — position relative to canvas top-left */
+      const rect    = canvas.getBoundingClientRect();
+      const mx      = mouseRef.current.x - rect.left;
+      const my      = mouseRef.current.y - rect.top;
+      const mStr    = mouseRef.current.strength;
+      const r2      = DEFORM_RADIUS * DEFORM_RADIUS;
+      const hasDeform = mStr > 0.005;
 
       /* Build scalar field */
       const field = new Float32Array(cols * rows);
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
-          const x = (i * CELL) / 240 + mx;
-          const y = (j * CELL) / 240 + my;
-          field[j * cols + i] =
+          const x = (i * CELL) / 240;
+          const y = (j * CELL) / 240;
+          let val =
             noise(x, y, t) +
             0.42 * noise(x * 2.1 + 7.3, y * 2.1 + 1.7, t * 1.4);
+
+          /* Gaussian crater around cursor */
+          if (hasDeform) {
+            const dx = i * CELL - mx;
+            const dy = j * CELL - my;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < r2 * 9) {
+              val -= DEFORM_STRENGTH * mStr * Math.exp(-d2 / (2 * r2));
+            }
+          }
+
+          field[j * cols + i] = val;
         }
       }
 
@@ -176,10 +196,12 @@ export default function TopoCanvas() {
     const loop = (now: number) => {
       if (!reduce) {
         tRef.current += ((now - lastRef.current) / 1000) * SPEED;
-        /* Smooth mouse lerp (4% per frame ≈ 60 fps) */
+        /* Smooth mouse position lerp (10% per frame) */
         const m = mouseRef.current;
-        m.normX += (m.targetX - m.normX) * 0.04;
-        m.normY += (m.targetY - m.normY) * 0.04;
+        m.x += (m.tx - m.x) * 0.1;
+        m.y += (m.ty - m.y) * 0.1;
+        /* Smooth strength fade-in/out (4% per frame — slow fade-out) */
+        m.strength += (m.tStrength - m.strength) * 0.04;
       }
       lastRef.current = now;
       draw();
@@ -192,17 +214,23 @@ export default function TopoCanvas() {
     /* ── Listeners ── */
     const onResize = () => { resize(); draw(); };
     const onMouse  = (e: MouseEvent) => {
-      mouseRef.current.targetX = (e.clientX / window.innerWidth)  * 2 - 1;
-      mouseRef.current.targetY = (e.clientY / window.innerHeight) * 2 - 1;
+      mouseRef.current.tx       = e.clientX;
+      mouseRef.current.ty       = e.clientY;
+      mouseRef.current.tStrength = 1;
+    };
+    const onLeave  = () => {
+      mouseRef.current.tStrength = 0;
     };
 
-    window.addEventListener("resize",    onResize);
-    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("resize",        onResize);
+    window.addEventListener("mousemove",     onMouse);
+    document.addEventListener("mouseleave",  onLeave);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize",    onResize);
-      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("resize",        onResize);
+      window.removeEventListener("mousemove",     onMouse);
+      document.removeEventListener("mouseleave",  onLeave);
     };
   }, []);
 

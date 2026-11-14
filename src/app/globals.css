@@ -200,10 +200,16 @@ h1, h2, h3, h4, h5, h6 {
     pointer-events: none;
   }
 
-  /* ── iOS conic-gradient border ring ──────────────────────────────────────
-   * Wraps a button with a 1.5px padding ring whose conic-gradient rotates
-   * with the light source angle (--light-angle), creating a "lit" highlight
-   * that follows the mouse (desktop) or gyroscope (mobile).
+  /* ── Hide scrollbar (keep scroll functionality) ───────────────────────── */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── iOS conic-gradient border ring — pill/button shape ──────────────────
    * Usage: <span className="ios-ring"><Button /></span>
    * ─────────────────────────────────────────────────────────────────────── */
   .ios-ring {
@@ -235,6 +241,45 @@ h1, h2, h3, h4, h5, h6 {
       rgba(255,255,255,0.00) 21%,
       rgba(255,255,255,0.00) 68%,
       rgba(255,255,255,0.40) 83%,
+      rgba(255,255,255,0.00) 90%
+    );
+  }
+
+  /* ── iOS ring for card-shaped elements (rounded rect, not pill) ──────────
+   * Usage: <div className="ios-ring-card"><Card /></div>
+   * ─────────────────────────────────────────────────────────────────────── */
+  .ios-ring-card {
+    display: block;
+    border-radius: 20px;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--light-angle, 225deg),
+      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.00) 10%,
+      rgba(255,255,255,0.32) 15%,
+      rgba(255,255,255,0.00) 21%,
+      rgba(255,255,255,0.00) 68%,
+      rgba(255,255,255,0.11) 83%,
+      rgba(255,255,255,0.00) 90%
+    );
+  }
+
+  /* ── iOS ring for small tag/pill chips ───────────────────────────────────
+   * Usage: <span className="ios-ring-tag"><TagChip /></span>
+   * ─────────────────────────────────────────────────────────────────────── */
+  .ios-ring-tag {
+    display: inline-flex;
+    border-radius: 9999px;
+    padding: 1px;
+    flex-shrink: 0;
+    background: conic-gradient(
+      from var(--light-angle, 225deg),
+      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.00) 10%,
+      rgba(255,255,255,0.42) 15%,
+      rgba(255,255,255,0.00) 21%,
+      rgba(255,255,255,0.00) 68%,
+      rgba(255,255,255,0.16) 83%,
       rgba(255,255,255,0.00) 90%
     );
   }

@@ -66,40 +66,35 @@ export default function Hero() {
       ref={containerRef}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6"
     >
-      {/* Topographic terrain — replaces particle wave */}
+      {/* Topographic terrain */}
       <TopoCanvas />
 
-      {/* Soft vignette — fades the terrain at top and bottom */}
+      {/* Soft vignette */}
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none z-[1]" />
       <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black to-transparent pointer-events-none z-[1]" />
 
-      {/* Content */}
+      {/* Content — pt-36 pushes the group down */}
       <motion.div
         style={{ y: contentY }}
-        className="relative z-10 text-center max-w-4xl mx-auto pt-24"
+        className="relative z-10 text-center max-w-4xl mx-auto pt-36"
       >
-        {/* Badge */}
+        {/* Badge — no pulsing dot */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2, type: "spring" }}
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C4281C]/25 bg-[#C4281C]/8 text-[#C4281C] text-xs font-body mb-2"
         >
-          <motion.span
-            className="w-1.5 h-1.5 rounded-full bg-[#C4281C]"
-            animate={{ scale: [1, 1.6, 1], opacity: [1, 0.4, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
           {t(translations.hero.badge, lang)}
         </motion.div>
 
-        {/* Main heading */}
+        {/* Main heading — smaller sizes */}
         <div className="mb-5 overflow-hidden">
           <motion.div
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-heading font-medium tracking-tight leading-heading text-white"
+            className="text-3xl sm:text-4xl lg:text-5xl font-heading font-medium tracking-tight leading-heading text-white"
           >
             {t(translations.hero.line1, lang)}
           </motion.div>
@@ -107,18 +102,18 @@ export default function Hero() {
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl sm:text-5xl lg:text-7xl font-heading font-medium tracking-tight leading-heading text-white mt-2"
+            className="text-3xl sm:text-4xl lg:text-6xl font-heading font-medium tracking-tight leading-heading text-white mt-2"
           >
             {t(translations.hero.line2, lang)}&nbsp;<TypewriterCycle lang={lang} />
           </motion.div>
         </div>
 
-        {/* Subtitle */}
+        {/* Subtitle — slightly smaller */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.65 }}
-          className="text-xl text-white/45 font-body leading-body max-w-md mx-auto mt-2 mb-6"
+          className="text-base text-white/45 font-body leading-body max-w-md mx-auto mt-2 mb-6"
         >
           {t(translations.hero.subtitle, lang)}
         </motion.p>
@@ -143,7 +138,7 @@ export default function Hero() {
           ))}
         </motion.div>
 
-        {/* ── Buttons ─────────────────────────────────────────────────────── */}
+        {/* ── Buttons — smaller padding ────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,7 +150,7 @@ export default function Hero() {
             <span className="ios-ring-strong">
               <Link
                 href="/projects"
-                className="group relative flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-colors duration-300"
+                className="group relative flex items-center gap-2 px-6 py-3 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-colors duration-300"
               >
                 <span>{t(translations.hero.cta1, lang)}</span>
                 <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
@@ -168,7 +163,7 @@ export default function Hero() {
             <span className="ios-ring">
               <Link
                 href="/contact"
-                className="px-7 py-3.5 rounded-full bg-white/5 backdrop-blur-sm text-white/80 font-heading font-medium text-sm hover:bg-white/10 hover:text-white transition-all duration-300"
+                className="px-6 py-3 rounded-full bg-white/5 backdrop-blur-sm text-white/80 font-heading font-medium text-sm hover:bg-white/10 hover:text-white transition-all duration-300"
               >
                 {t(translations.hero.cta2, lang)}
               </Link>

@@ -21,7 +21,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
 
-          {/* Columna izquierda — Navegación, texto a la izquierda */}
+          {/* Columna izquierda — Navegación */}
           <div className="flex flex-col items-start">
             <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-4">
               {t(translations.footer.nav, lang)}
@@ -40,7 +40,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Columna central — Logo y tagline centrados */}
+          {/* Columna central — Logo y tagline */}
           <div className="flex flex-col items-center text-center gap-4">
             <Image
               src="/LogoWhite.png"
@@ -54,7 +54,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Columna derecha — Contacto, alineado a la derecha */}
+          {/* Columna derecha — Contacto */}
           <div className="flex flex-col items-end">
             <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-4">
               {t(translations.footer.contact, lang)}
@@ -85,9 +85,9 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/20 font-body">
-            © 2025 PROWEB Solutions. {t(translations.footer.rights, lang)}
+            © 2026 PROWEB Solutions. {t(translations.footer.rights, lang)}
           </p>
-          <p className="text-xs text-white/15 font-body">Last updated: 03/17/2026 | V.1.0.0</p>
+          <p className="text-xs text-white/15 font-body">CERT-PRW-2026-X9K2 | Last updated: 11/13/2026 | V.1.1.0</p>
         </div>
       </div>
     </footer>
