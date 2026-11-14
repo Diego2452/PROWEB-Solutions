@@ -39,19 +39,20 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
   }
 
   return (
-    <div style={{ perspective: 1000 }}>
+    <div style={{ perspective: 1000 }} className="h-full">
       <motion.div
         ref={ref}
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={handleMouseLeave}
-        className={`relative overflow-hidden ${className}`}
+        className={`relative overflow-hidden h-full ${className}`}
       >
         {hovered && (
           <div
-            className="absolute inset-0 pointer-events-none rounded-2xl z-10"
+            className="absolute inset-0 pointer-events-none z-10"
             style={{
+              borderRadius: "inherit",
               background: `radial-gradient(220px circle at ${glowPos.x}% ${glowPos.y}%, rgba(196,40,28,0.13), transparent 70%)`,
             }}
           />
@@ -108,7 +109,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Stats with tilt */}
+            {/* Stats with ios-ring-card + tilt */}
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, i) => (
                 <motion.div
@@ -117,13 +118,17 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full"
                 >
-                  <TiltCard className="bg-[#0A0A0A] rounded-2xl p-6 border border-white/5 hover:border-[#C4281C]/20 transition-colors duration-300 group h-full">
-                    <p className="text-3xl font-heading font-medium text-[#C4281C] tracking-tight mb-1">
-                      <CounterNumber value={stat.value} />
-                    </p>
-                    <p className="text-sm text-white/35 font-body">{stat.label}</p>
-                  </TiltCard>
+                  {/* ios-ring-card wrapper */}
+                  <div className="ios-ring-card h-full">
+                    <TiltCard className="bg-[#060606] rounded-[19px] p-6 group">
+                      <p className="text-3xl font-heading font-medium text-[#C4281C] tracking-tight mb-1">
+                        <CounterNumber value={stat.value} />
+                      </p>
+                      <p className="text-sm text-white/35 font-body">{stat.label}</p>
+                    </TiltCard>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -131,29 +136,35 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Services preview with tilt */}
+      {/* Services preview with tilt + ios-ring-card */}
       <Section className="py-28" variant="scale">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <TiltCard className="rounded-3xl bg-[#0A0A0A] border border-white/5 p-12 lg:p-16 hover:border-[#C4281C]/15 transition-colors duration-500">
-            <div className="relative z-10 max-w-2xl">
-              <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-4">
-                {t(translations.home.servLabel, lang)}
-              </p>
-              <h2 className="text-4xl font-heading font-medium tracking-tight leading-heading text-white mb-6">
-                {t(translations.home.servTitle, lang)}
-              </h2>
-              <p className="text-base text-white/40 font-body leading-body mb-8">
-                {t(translations.home.servBody, lang)}
-              </p>
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-white/10 text-sm font-heading font-medium text-white hover:border-[#C4281C]/40 hover:text-[#C4281C] transition-all duration-300"
-              >
-                {t(translations.home.servBtn, lang)}
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </TiltCard>
+          {/* ios-ring-card wrapper for services block */}
+          <div className="ios-ring-card">
+            <TiltCard className="rounded-[19px] bg-[#060606] p-12 lg:p-16">
+              <div className="relative z-10 max-w-2xl">
+                <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-4">
+                  {t(translations.home.servLabel, lang)}
+                </p>
+                <h2 className="text-4xl font-heading font-medium tracking-tight leading-heading text-white mb-6">
+                  {t(translations.home.servTitle, lang)}
+                </h2>
+                <p className="text-base text-white/40 font-body leading-body mb-8">
+                  {t(translations.home.servBody, lang)}
+                </p>
+                {/* ios-ring on "Ver servicios" button */}
+                <span className="ios-ring">
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-[#111] text-sm font-heading font-medium text-white hover:text-[#C4281C] transition-all duration-300"
+                  >
+                    {t(translations.home.servBtn, lang)}
+                    <ArrowRight size={14} />
+                  </Link>
+                </span>
+              </div>
+            </TiltCard>
+          </div>
         </div>
       </Section>
 
@@ -213,13 +224,16 @@ export default function HomePage() {
           <p className="text-base text-white/35 font-body leading-body max-w-xl mx-auto mb-10">
             {t(translations.home.ctaBody, lang)}
           </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 hover:scale-[1.03]"
-          >
-            {t(translations.home.ctaBtn, lang)}
-            <ArrowRight size={14} />
-          </Link>
+          {/* ios-ring-strong on main CTA */}
+          <span className="ios-ring-strong">
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 hover:scale-[1.03]"
+            >
+              {t(translations.home.ctaBtn, lang)}
+              <ArrowRight size={14} />
+            </Link>
+          </span>
         </div>
       </Section>
     </>

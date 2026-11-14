@@ -2,92 +2,172 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MessageCircle, Flag } from "lucide-react";
+import { useState } from "react";
+import { Mail, MessageCircle, Github, Instagram } from "lucide-react";
 import { useLang } from "@/contexts/LanguageContext";
-import { translations, t } from "@/lib/translations";
+import TopoCanvas from "./fx/TopoCanvas";
+
+/* ── Animated left-line link ── */
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="group flex w-fit items-center gap-2 text-sm text-white/40 transition-colors duration-200 hover:text-[#C4281C]"
+    >
+      <span className="h-px w-0 bg-[#C4281C] transition-all duration-300 group-hover:w-3 flex-shrink-0" />
+      {children}
+    </Link>
+  );
+}
 
 export default function Footer() {
   const { lang } = useLang();
+  const [sealHovered, setSealHovered] = useState(false);
 
-  const footerLinks = [
-    { label: t(translations.nav.projects, lang), href: "/projects" },
-    { label: t(translations.nav.services, lang), href: "/services" },
-    { label: t(translations.nav.about, lang), href: "/about" },
-    { label: t(translations.nav.contact, lang), href: "/contact" },
+  const navLinks = [
+    { href: "/",         label: lang === "en" ? "Home"     : "Inicio"    },
+    { href: "/projects", label: lang === "en" ? "Projects" : "Proyectos" },
+    { href: "/services", label: lang === "en" ? "Services" : "Servicios" },
+    { href: "/about",    label: lang === "en" ? "About"    : "Nosotros"  },
+    { href: "/contact",  label: lang === "en" ? "Contact"  : "Contacto"  },
+  ];
+
+  const socials = [
+    { href: "https://github.com/diegovargas-dev",         icon: Github,        label: "GitHub"    },
+    { href: "https://instagram.com/proweb.solutions",     icon: Instagram,     label: "Instagram" },
+    { href: "mailto:diegovargas.dev@gmail.com",           icon: Mail,          label: "Email"     },
+    { href: "https://wa.me/50684058065",                  icon: MessageCircle, label: "WhatsApp"  },
   ];
 
   return (
-    <footer className="border-t border-white/5 bg-black py-16">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+    <footer className="relative border-t border-white/5 bg-black/60 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
 
-          {/* Columna izquierda — Navegación */}
-          <div className="flex flex-col items-start">
-            <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-4">
-              {t(translations.footer.nav, lang)}
+          {/* ── Col 1: Brand ── */}
+          <div className="flex flex-col gap-5">
+            <Link href="/" className="inline-flex items-center gap-3 w-fit group">
+              <div className="w-7 h-7 rounded-lg bg-[#C4281C] flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs font-heading font-bold">P</span>
+              </div>
+              <span className="text-sm font-heading font-medium text-white group-hover:text-[#C4281C] transition-colors duration-200">
+                PROWEB Solutions
+              </span>
+            </Link>
+
+            <p className="text-sm text-white/30 font-body leading-body max-w-[220px]">
+              {lang === "en"
+                ? "Building digital experiences that drive real results."
+                : "Construyendo experiencias digitales que generan resultados reales."}
             </p>
-            <ul className="flex flex-col gap-3">
-              {footerLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-white/40 hover:text-white transition-colors duration-200"
+
+            {/* Social round buttons with ios-ring */}
+            <div className="flex gap-2 flex-wrap">
+              {socials.map(({ href, icon: Icon, label }) => (
+                <span key={label} className="ios-ring">
+                  <a
+                    href={href}
+                    target={href.startsWith("mailto") ? undefined : "_blank"}
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="flex items-center justify-center w-9 h-9 rounded-full bg-white/5 text-white/40 hover:bg-[#C4281C] hover:text-white transition-all duration-200"
                   >
-                    {link.label}
-                  </Link>
-                </li>
+                    <Icon size={15} />
+                  </a>
+                </span>
               ))}
-            </ul>
-          </div>
+            </div>
 
-          {/* Columna central — Logo y tagline */}
-          <div className="flex flex-col items-center text-center gap-4">
-            <Image
-              src="/LogoWhite.png"
-              alt="PROWEB Solutions"
-              width={140}
-              height={42}
-              className="object-contain h-9 w-auto"
-            />
-            <p className="text-sm text-white/35 font-body leading-relaxed max-w-xs">
-              {t(translations.footer.tagline, lang)}
+            <p className="text-xs text-white/20 font-body mt-2">
+              © {new Date().getFullYear()} PROWEB Solutions.{" "}
+              {lang === "en" ? "All rights reserved." : "Todos los derechos reservados."}
             </p>
           </div>
 
-          {/* Columna derecha — Contacto */}
-          <div className="flex flex-col items-end">
-            <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-4">
-              {t(translations.footer.contact, lang)}
+          {/* ── Col 2: Navigation ── */}
+          <div className="flex flex-col gap-4">
+            <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-1">
+              {lang === "en" ? "Navigation" : "Navegación"}
             </p>
-            <ul className="flex flex-col gap-3 items-end">
-              <li>
-                <a href="mailto:ventas.prowebsolutionscr@gmail.com" className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-[#C4281C] transition-colors duration-200">
-                  ventas.prowebsolutionscr@gmail.com
-                  <Mail size={14} className="shrink-0" />
-                </a>
-              </li>
-              <li>
-                <a href="https://wa.me/50685233668" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-[#C4281C] transition-colors duration-200">
-                  (+506) 8523-3668
-                  <MessageCircle size={14} className="shrink-0" />
-                </a>
-              </li>
-              <li>
-                <a href="https://maps.app.goo.gl/TKG8Arm7ojwpe3oA9" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-[#C4281C] transition-colors duration-200">
-                  San Pedro, San José, Costa Rica
-                  <Flag size={14} className="shrink-0" />
-                </a>
-              </li>
-            </ul>
+            {navLinks.map(({ href, label }) => (
+              <FooterLink key={href} href={href}>
+                {label}
+              </FooterLink>
+            ))}
           </div>
 
-        </div>
+          {/* ── Col 3: Contact + ProWebCredit seal ── */}
+          <div className="flex flex-col gap-4">
+            <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-1">
+              {lang === "en" ? "Contact" : "Contacto"}
+            </p>
 
-        <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/20 font-body">
-            © 2026 PROWEB Solutions. {t(translations.footer.rights, lang)}
-          </p>
-          <p className="text-xs text-white/15 font-body">CERT-PRW-2026-X9K2 | Last updated: 11/13/2026 | V.1.1.0</p>
+            <a
+              href="mailto:diegovargas.dev@gmail.com"
+              className="group flex w-fit items-center gap-2 text-sm text-white/40 hover:text-[#C4281C] transition-colors duration-200"
+            >
+              <Mail size={13} className="text-[#C4281C] flex-shrink-0" />
+              diegovargas.dev@gmail.com
+            </a>
+
+            <a
+              href="https://wa.me/50684058065"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex w-fit items-center gap-2 text-sm text-white/40 hover:text-[#C4281C] transition-colors duration-200"
+            >
+              <MessageCircle size={13} className="text-[#C4281C] flex-shrink-0" />
+              {lang === "en" ? "WhatsApp" : "WhatsApp"}
+            </a>
+
+            {/* ── ProWebCredit Seal ── */}
+            <div
+              className="ios-ring-card mt-4 w-fit cursor-default"
+              onMouseEnter={() => setSealHovered(true)}
+              onMouseLeave={() => setSealHovered(false)}
+            >
+              <div className="relative w-56 h-28 rounded-[19px] bg-[#0A0A0A] overflow-hidden select-none">
+                {/* Topo canvas background on hover */}
+                {sealHovered && (
+                  <div className="absolute inset-0 opacity-25 pointer-events-none">
+                    <TopoCanvas />
+                  </div>
+                )}
+
+                <div className="relative z-10 p-4 flex flex-col h-full justify-between">
+                  {/* Top: logo + label */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-sm bg-[#C4281C] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-[8px] font-heading font-bold leading-none">P</span>
+                    </div>
+                    <span className="text-[9px] font-heading font-medium text-white/50 uppercase tracking-widest">
+                      PROWEB Certified
+                    </span>
+                  </div>
+
+                  {/* Bottom: cert code + chips */}
+                  <div>
+                    <p className="text-[8px] font-body text-white/20 mb-2 font-mono tracking-wide">
+                      CERT-PRW-2026-X9K2
+                    </p>
+                    <div className="flex gap-1.5">
+                      <span className="ios-ring-tag">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#111] text-[9px] text-white/35 font-body">
+                          V.1.1.0
+                        </span>
+                      </span>
+                      <span className="ios-ring-tag">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#111] text-[9px] text-white/35 font-body">
+                          11/13/2026
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </footer>

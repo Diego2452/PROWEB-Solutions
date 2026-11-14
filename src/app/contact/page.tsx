@@ -35,9 +35,9 @@ export default function ContactPage() {
   const contactMethods = translations.contact.methods.map((m) => t(m, lang));
 
   const contactInfo = [
-    { icon: Mail,   label: t(translations.contact.emailLabel,    lang), value: "ventas.prowebsolutionscr@gmail.com"              },
-    { icon: Phone,  label: t(translations.contact.phoneLabel,    lang), value: "+506 8523-3668"                        },
-    { icon: MapPin, label: t(translations.contact.locationLabel, lang), value: "Costa Rica"                           },
+    { icon: Mail,   label: t(translations.contact.emailLabel,    lang), value: "ventas.prowebsolutionscr@gmail.com" },
+    { icon: Phone,  label: t(translations.contact.phoneLabel,    lang), value: "+506 8523-3668"                     },
+    { icon: MapPin, label: t(translations.contact.locationLabel, lang), value: "Costa Rica"                        },
     { icon: Clock,  label: t(translations.contact.scheduleLabel, lang), value: t(translations.contact.scheduleValue, lang) },
   ];
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
         </Section>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-          {/* Info cards */}
+          {/* Info cards — ios-ring-card wrapper */}
           <div className="lg:col-span-2 flex flex-col gap-4">
             {contactInfo.map((item, i) => {
               const Icon = item.icon;
@@ -103,209 +103,223 @@ export default function ContactPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="bg-[#0A0A0A] rounded-2xl p-5 border border-white/5 hover:border-[#C4281C]/20 transition-all duration-300 group flex items-center gap-4"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-[#C4281C]/10 flex items-center justify-center shrink-0 group-hover:bg-[#C4281C]/20 transition-colors duration-300">
-                    <Icon size={16} className="text-[#C4281C]" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-white/30 font-body mb-0.5">{item.label}</p>
-                    <p className="text-sm text-white/70 font-body">{item.value}</p>
+                  <div className="ios-ring-card">
+                    <div className="bg-[#060606] rounded-[19px] p-5 group flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#C4281C]/10 flex items-center justify-center shrink-0 group-hover:bg-[#C4281C]/20 transition-colors duration-300">
+                        <Icon size={16} className="text-[#C4281C]" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-white/30 font-body mb-0.5">{item.label}</p>
+                        <p className="text-sm text-white/70 font-body">{item.value}</p>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               );
             })}
           </div>
 
-          {/* Form */}
+          {/* Form — ios-ring-card wrapper */}
           <div className="lg:col-span-3">
             <AnimatePresence mode="wait">
               {submitted ? (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
-                  className="h-full min-h-[500px] flex flex-col items-center justify-center gap-5 bg-[#141414] rounded-2xl border border-[#C4281C]/20 p-12 text-center"
-                >
+                <div key="success-wrapper" className="ios-ring-card">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
-                    className="w-16 h-16 rounded-full bg-[#C4281C]/15 flex items-center justify-center"
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
+                    className="h-full min-h-[500px] flex flex-col items-center justify-center gap-5 bg-[#060606] rounded-[19px] p-12 text-center"
                   >
-                    <CheckCircle size={32} className="text-[#C4281C]" />
-                  </motion.div>
-                  <h3 className="text-2xl font-heading font-medium tracking-tight text-white">
-                    {t(translations.contact.successTitle, lang)}
-                  </h3>
-                  <p className="text-sm text-white/40 font-body leading-body max-w-xs">
-                    {t(translations.contact.successBody, lang)}
-                  </p>
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => { setSubmitted(false); setSelectedQuoteServices([]); setContactMethod(""); }}
-                    className="mt-2 px-6 py-2.5 rounded-full border border-[#C4281C]/30 text-sm text-[#C4281C] font-heading font-medium hover:bg-[#C4281C]/10 transition-colors duration-200"
-                  >
-                    {t(translations.contact.successBtn, lang)}
-                  </motion.button>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="form"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  onSubmit={handleSubmit}
-                  className="bg-[#0A0A0A] rounded-2xl border border-white/5 p-8 flex flex-col gap-5"
-                >
-                  {/* Name row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-body text-white/35">
-                        {t(translations.contact.nameLabel, lang)} <span className="text-[#C4281C]">*</span>
-                      </label>
-                      <input
-                        required name="nombre" type="text"
-                        placeholder={t(translations.contact.namePlaceholder, lang)}
-                        onFocus={() => setFocused("nombre")} onBlur={() => setFocused(null)}
-                        className={inputClass}
-                        style={focused === "nombre" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-body text-white/35">
-                        {t(translations.contact.lastNameLabel, lang)} <span className="text-[#C4281C]">*</span>
-                      </label>
-                      <input
-                        required name="apellido" type="text"
-                        placeholder={t(translations.contact.lastNamePlaceholder, lang)}
-                        onFocus={() => setFocused("apellido")} onBlur={() => setFocused(null)}
-                        className={inputClass}
-                        style={focused === "apellido" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-body text-white/35">
-                      {t(translations.contact.emailFieldLabel, lang)} <span className="text-[#C4281C]">*</span>
-                    </label>
-                    <input
-                      required name="email" type="email"
-                      placeholder={t(translations.contact.emailPlaceholder, lang)}
-                      onFocus={() => setFocused("email")} onBlur={() => setFocused(null)}
-                      className={inputClass}
-                      style={focused === "email" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                    />
-                  </div>
-
-                  {/* Phone + Country */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-body text-white/35">
-                        {t(translations.contact.phoneFieldLabel, lang)}
-                      </label>
-                      <input
-                        name="telefono" type="tel" defaultValue="+506 "
-                        onFocus={() => setFocused("tel")} onBlur={() => setFocused(null)}
-                        className={inputClass}
-                        style={focused === "tel" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-body text-white/35">
-                        {t(translations.contact.countryLabel, lang)}
-                      </label>
-                      <input
-                        name="pais" type="text" defaultValue="Costa Rica"
-                        onFocus={() => setFocused("pais")} onBlur={() => setFocused(null)}
-                        className={inputClass}
-                        style={focused === "pais" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Contact method */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-body text-white/35">
-                      {t(translations.contact.methodLabel, lang)}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {contactMethods.map((m) => (
-                        <motion.button
-                          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                          type="button" key={m} onClick={() => setContactMethod(m)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-body border transition-all duration-200 ${
-                            contactMethod === m
-                              ? "border-[#C4281C]/50 bg-[#C4281C]/12 text-[#C4281C]"
-                              : "border-white/8 text-white/35 hover:border-white/20 hover:text-white/55"
-                          }`}
-                        >
-                          {m}
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Services to quote */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-body text-white/35">
-                      {lang === "en" ? "Services to quote" : "Servicios a cotizar"}
-                    </label>
-                    <ServiceMultiSelect
-                      selected={selectedQuoteServices}
-                      onChange={setSelectedQuoteServices}
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-body text-white/35">
-                      {t(translations.contact.descLabel, lang)} <span className="text-[#C4281C]">*</span>
-                    </label>
-                    <textarea
-                      required name="descripcion" rows={4}
-                      placeholder={t(translations.contact.descPlaceholder, lang)}
-                      onFocus={() => setFocused("desc")} onBlur={() => setFocused(null)}
-                      className={`${inputClass} resize-none`}
-                      style={focused === "desc" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
-                    />
-                  </div>
-
-                  {/* Error */}
-                  {error && (
-                    <p className="text-xs text-red-400 font-body text-center">
-                      {lang === "en"
-                        ? "Something went wrong. Please try again or email us directly."
-                        : "Ocurrió un error. Intenta de nuevo o escríbenos directamente."}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
+                      className="w-16 h-16 rounded-full bg-[#C4281C]/15 flex items-center justify-center"
+                    >
+                      <CheckCircle size={32} className="text-[#C4281C]" />
+                    </motion.div>
+                    <h3 className="text-2xl font-heading font-medium tracking-tight text-white">
+                      {t(translations.contact.successTitle, lang)}
+                    </h3>
+                    <p className="text-sm text-white/40 font-body leading-body max-w-xs">
+                      {t(translations.contact.successBody, lang)}
                     </p>
-                  )}
-
-                  {/* Submit */}
-                  <motion.button
-                    whileHover={{ scale: sending ? 1 : 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    type="submit"
-                    disabled={sending}
-                    className="mt-1 flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <motion.span
-                      className="absolute inset-0 bg-white/10"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "100%" }}
-                      transition={{ duration: 0.5 }}
-                    />
-                    <Send size={14} className="relative z-10" />
-                    <span className="relative z-10">
-                      {sending
-                        ? (lang === "en" ? "Sending..." : "Enviando...")
-                        : t(translations.contact.submitBtn, lang)}
+                    {/* ios-ring on "Enviar otro" button */}
+                    <span className="ios-ring mt-2">
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => { setSubmitted(false); setSelectedQuoteServices([]); setContactMethod(""); }}
+                        className="px-6 py-2.5 rounded-full bg-[#111] text-sm text-[#C4281C] font-heading font-medium hover:bg-[#C4281C]/10 transition-colors duration-200"
+                      >
+                        {t(translations.contact.successBtn, lang)}
+                      </motion.button>
                     </span>
-                  </motion.button>
-                </motion.form>
+                  </motion.div>
+                </div>
+              ) : (
+                <div key="form-wrapper" className="ios-ring-card">
+                  <motion.form
+                    key="form"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    onSubmit={handleSubmit}
+                    className="bg-[#060606] rounded-[19px] p-8 flex flex-col gap-5"
+                  >
+                    {/* Name row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-body text-white/35">
+                          {t(translations.contact.nameLabel, lang)} <span className="text-[#C4281C]">*</span>
+                        </label>
+                        <input
+                          required name="nombre" type="text"
+                          placeholder={t(translations.contact.namePlaceholder, lang)}
+                          onFocus={() => setFocused("nombre")} onBlur={() => setFocused(null)}
+                          className={inputClass}
+                          style={focused === "nombre" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-body text-white/35">
+                          {t(translations.contact.lastNameLabel, lang)} <span className="text-[#C4281C]">*</span>
+                        </label>
+                        <input
+                          required name="apellido" type="text"
+                          placeholder={t(translations.contact.lastNamePlaceholder, lang)}
+                          onFocus={() => setFocused("apellido")} onBlur={() => setFocused(null)}
+                          className={inputClass}
+                          style={focused === "apellido" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-body text-white/35">
+                        {t(translations.contact.emailFieldLabel, lang)} <span className="text-[#C4281C]">*</span>
+                      </label>
+                      <input
+                        required name="email" type="email"
+                        placeholder={t(translations.contact.emailPlaceholder, lang)}
+                        onFocus={() => setFocused("email")} onBlur={() => setFocused(null)}
+                        className={inputClass}
+                        style={focused === "email" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                      />
+                    </div>
+
+                    {/* Phone + Country */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-body text-white/35">
+                          {t(translations.contact.phoneFieldLabel, lang)}
+                        </label>
+                        <input
+                          name="telefono" type="tel" defaultValue="+506 "
+                          onFocus={() => setFocused("tel")} onBlur={() => setFocused(null)}
+                          className={inputClass}
+                          style={focused === "tel" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-body text-white/35">
+                          {t(translations.contact.countryLabel, lang)}
+                        </label>
+                        <input
+                          name="pais" type="text" defaultValue="Costa Rica"
+                          onFocus={() => setFocused("pais")} onBlur={() => setFocused(null)}
+                          className={inputClass}
+                          style={focused === "pais" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Contact method — ios-ring-tag on each pill */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-body text-white/35">
+                        {t(translations.contact.methodLabel, lang)}
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {contactMethods.map((m) => (
+                          <span key={m} className="ios-ring-tag">
+                            <motion.button
+                              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                              type="button" onClick={() => setContactMethod(m)}
+                              className={`px-3 py-1.5 rounded-full text-xs font-body transition-all duration-200 ${
+                                contactMethod === m
+                                  ? "bg-[#C4281C]/12 text-[#C4281C]"
+                                  : "bg-[#111] text-white/35 hover:text-white/55"
+                              }`}
+                            >
+                              {m}
+                            </motion.button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Services to quote */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-body text-white/35">
+                        {lang === "en" ? "Services to quote" : "Servicios a cotizar"}
+                      </label>
+                      <ServiceMultiSelect
+                        selected={selectedQuoteServices}
+                        onChange={setSelectedQuoteServices}
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-body text-white/35">
+                        {t(translations.contact.descLabel, lang)} <span className="text-[#C4281C]">*</span>
+                      </label>
+                      <textarea
+                        required name="descripcion" rows={4}
+                        placeholder={t(translations.contact.descPlaceholder, lang)}
+                        onFocus={() => setFocused("desc")} onBlur={() => setFocused(null)}
+                        className={`${inputClass} resize-none`}
+                        style={focused === "desc" ? { borderColor: "rgba(196,40,28,0.5)", boxShadow: "0 0 0 3px rgba(196,40,28,0.08)" } : {}}
+                      />
+                    </div>
+
+                    {/* Error */}
+                    {error && (
+                      <p className="text-xs text-red-400 font-body text-center">
+                        {lang === "en"
+                          ? "Something went wrong. Please try again or email us directly."
+                          : "Ocurrió un error. Intenta de nuevo o escríbenos directamente."}
+                      </p>
+                    )}
+
+                    {/* Submit — ios-ring-strong wrapper */}
+                    <span className="ios-ring-strong mt-1" style={{ display: 'flex', borderRadius: '9999px' }}>
+                      <motion.button
+                        whileHover={{ scale: sending ? 1 : 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        type="submit"
+                        disabled={sending}
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        <motion.span
+                          className="absolute inset-0 bg-white/10"
+                          initial={{ x: "-100%" }}
+                          whileHover={{ x: "100%" }}
+                          transition={{ duration: 0.5 }}
+                        />
+                        <Send size={14} className="relative z-10" />
+                        <span className="relative z-10">
+                          {sending
+                            ? (lang === "en" ? "Sending..." : "Enviando...")
+                            : t(translations.contact.submitBtn, lang)}
+                        </span>
+                      </motion.button>
+                    </span>
+                  </motion.form>
+                </div>
               )}
             </AnimatePresence>
           </div>

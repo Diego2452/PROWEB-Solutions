@@ -79,8 +79,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Main image container */}
-            <div className="relative rounded-2xl overflow-hidden aspect-video border border-white/5 bg-[#0A0A0A] group">
+            {/* Main image container — bg #060606, no border */}
+            <div className="relative rounded-2xl overflow-hidden aspect-video bg-[#060606] group">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentImage}
@@ -233,7 +233,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
               {longDesc}
             </p>
 
-            {/* Tags / Technologies */}
+            {/* Tags / Technologies — solid bg-[#111] so ring shows */}
             <div>
               <p className="text-xs font-heading font-medium text-white/25 uppercase tracking-widest mb-3">
                 {lang === "en" ? "Technologies" : "Tecnologías"}
@@ -243,7 +243,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
                   const iconPath = TAG_ICONS[tag];
                   return (
                     <span key={tag} className="ios-ring-tag">
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-tight px-3 py-1.5 rounded-full bg-white/5 text-white/70 font-body hover:text-[#C4281C]/90 transition-colors duration-200">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-tight px-3 py-1.5 rounded-full bg-[#111] text-white/70 font-body hover:text-[#C4281C]/90 transition-colors duration-200">
                         {iconPath && (
                           <img
                             src={iconPath}
@@ -264,61 +264,71 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             {/* Divider */}
             <div className="h-px bg-white/5" />
 
-            {/* Action buttons */}
+            {/* Action buttons — ios-ring-strong / ios-ring */}
             <div className="flex gap-3">
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                href={p.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#C4281C] text-white text-sm font-heading font-medium hover:bg-[#991F16] transition-colors duration-300"
-              >
-                <ExternalLink size={14} />
-                {lang === "en" ? "View demo" : "Ver demo"}
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                href={p.codeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white/50 text-sm font-heading font-medium hover:border-white/25 hover:text-white transition-all duration-300"
-              >
-                <Github size={14} />
-                {lang === "en" ? "View code" : "Ver código"}
-              </motion.a>
+              <span className="ios-ring-strong">
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href={p.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#C4281C] text-white text-sm font-heading font-medium hover:bg-[#991F16] transition-colors duration-300"
+                >
+                  <ExternalLink size={14} />
+                  {lang === "en" ? "View demo" : "Ver demo"}
+                </motion.a>
+              </span>
+              <span className="ios-ring">
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href={p.codeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#111] text-white/50 text-sm font-heading font-medium hover:text-white transition-all duration-300"
+                >
+                  <Github size={14} />
+                  {lang === "en" ? "View code" : "Ver código"}
+                </motion.a>
+              </span>
             </div>
           </motion.div>
         </div>
 
-        {/* Bottom CTA */}
+        {/* Bottom CTA — ios-ring-card wrapper */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mt-24 rounded-3xl bg-[#0A0A0A] border border-white/5 hover:border-[#C4281C]/15 transition-colors duration-500 p-12 text-center relative overflow-hidden"
+          className="mt-24"
         >
-          <div className="absolute top-0 right-0 w-px h-20 bg-gradient-to-b from-[#C4281C]/50 to-transparent" />
-          <div className="absolute top-0 right-0 h-px w-20 bg-gradient-to-l from-[#C4281C]/50 to-transparent" />
-          <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-3">
-            {lang === "en" ? "Interested?" : "¿Te interesa?"}
-          </p>
-          <h2 className="text-3xl font-heading font-medium tracking-tight text-white mb-4">
-            {lang === "en" ? "Let's build something together" : "Construyamos algo juntos"}
-          </h2>
-          <p className="text-sm text-white/40 font-body leading-body max-w-md mx-auto mb-8">
-            {lang === "en"
-              ? "Have a similar project in mind? We'd love to hear about it."
-              : "¿Tienes un proyecto similar en mente? Nos encantaría escucharte."}
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 hover:scale-[1.03]"
-          >
-            {lang === "en" ? "Contact us" : "Contáctenos"}
-          </Link>
+          <div className="ios-ring-card">
+            <div className="rounded-[19px] bg-[#060606] p-12 text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-px h-20 bg-gradient-to-b from-[#C4281C]/50 to-transparent" />
+              <div className="absolute top-0 right-0 h-px w-20 bg-gradient-to-l from-[#C4281C]/50 to-transparent" />
+              <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-3">
+                {lang === "en" ? "Interested?" : "¿Te interesa?"}
+              </p>
+              <h2 className="text-3xl font-heading font-medium tracking-tight text-white mb-4">
+                {lang === "en" ? "Let's build something together" : "Construyamos algo juntos"}
+              </h2>
+              <p className="text-sm text-white/40 font-body leading-body max-w-md mx-auto mb-8">
+                {lang === "en"
+                  ? "Have a similar project in mind? We'd love to hear about it."
+                  : "¿Tienes un proyecto similar en mente? Nos encantaría escucharte."}
+              </p>
+              <span className="ios-ring-strong">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#C4281C] text-white font-heading font-medium text-sm hover:bg-[#991F16] transition-all duration-300 hover:scale-[1.03]"
+                >
+                  {lang === "en" ? "Contact us" : "Contáctenos"}
+                </Link>
+              </span>
+            </div>
+          </div>
         </motion.div>
 
       </div>

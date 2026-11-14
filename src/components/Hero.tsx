@@ -78,17 +78,7 @@ export default function Hero() {
         style={{ y: contentY }}
         className="relative z-10 text-center max-w-4xl mx-auto pt-36"
       >
-        {/* Badge — no pulsing dot */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2, type: "spring" }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C4281C]/25 bg-[#C4281C]/8 text-[#C4281C] text-xs font-body mb-2"
-        >
-          {t(translations.hero.badge, lang)}
-        </motion.div>
-
-        {/* Main heading — smaller sizes */}
+        {/* Main heading */}
         <div className="mb-5 overflow-hidden">
           <motion.div
             initial={{ y: 60, opacity: 0 }}
@@ -108,7 +98,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Subtitle — slightly smaller */}
+        {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +108,7 @@ export default function Hero() {
           {t(translations.hero.subtitle, lang)}
         </motion.p>
 
-        {/* Tech pills */}
+        {/* Tech pills — ios-ring-tag with solid bg */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -131,14 +121,16 @@ export default function Hero() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.1 + i * 0.08 }}
-              className="text-xs px-3 py-1 rounded-full bg-white/4 border border-white/8 text-white/55 font-body"
+              className="ios-ring-tag"
             >
-              {tech}
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#111] text-xs text-white/55 font-body">
+                {tech}
+              </span>
             </motion.span>
           ))}
         </motion.div>
 
-        {/* ── Buttons — smaller padding ────────────────────────────────────── */}
+        {/* Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

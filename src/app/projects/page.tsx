@@ -100,7 +100,7 @@ export default function ProjectsPage() {
           />
         </div>
 
-        {/* Category filter — horizontal scroll, no wrap */}
+        {/* Category filter — ios-ring-tag already in place */}
         <div className="flex gap-2 mb-10 overflow-x-auto scrollbar-hide pb-2">
           {CATEGORIES.map(cat => {
             const isActive = active === cat;
@@ -109,13 +109,12 @@ export default function ProjectsPage() {
               ? projectsData.length
               : projectsData.filter(p => p.category === cat).length;
             return (
-              /* iOS ring wrapper — flex-shrink-0 prevents squishing */
               <span key={cat} className="ios-ring-tag flex-shrink-0">
                 <button
                   onClick={() => handleCategory(cat)}
                   className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-heading font-medium transition-all duration-200 whitespace-nowrap"
                   style={{
-                    backgroundColor: isActive ? "#C4281C"              : "transparent",
+                    backgroundColor: isActive ? "#C4281C"              : "#111",
                     color:           isActive ? "#ffffff"              : "rgba(255,255,255,0.45)",
                   }}
                 >
@@ -164,40 +163,50 @@ export default function ProjectsPage() {
           </p>
         )}
 
-        {/* Pagination */}
+        {/* Pagination — ios-ring-card on each button */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-2">
             <span className="text-xs text-white/30 font-body mr-2">
               {lang === "en" ? `Page ${page} of ${totalPages}` : `Página ${page} de ${totalPages}`}
             </span>
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/10 text-white/40 hover:border-[#C4281C]/50 hover:text-[#C4281C] disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+
+            {/* Prev */}
+            <div className="ios-ring-card" style={{ display: 'inline-flex' }}>
               <button
-                key={n}
-                onClick={() => setPage(n)}
-                className="flex items-center justify-center w-9 h-9 rounded-xl text-sm font-heading font-medium border transition-all duration-200"
-                style={{
-                  backgroundColor: page === n ? "#C4281C"             : "transparent",
-                  borderColor:     page === n ? "#C4281C"             : "rgba(255,255,255,0.1)",
-                  color:           page === n ? "#ffffff"             : "rgba(255,255,255,0.4)",
-                }}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="flex items-center justify-center w-9 h-9 rounded-[19px] text-white/40 hover:text-[#C4281C] disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-200 bg-[#060606]"
               >
-                {n}
+                <ChevronLeft size={16} />
               </button>
+            </div>
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+              <div key={n} className="ios-ring-card" style={{ display: 'inline-flex' }}>
+                <button
+                  onClick={() => setPage(n)}
+                  className="flex items-center justify-center w-9 h-9 rounded-[19px] text-sm font-heading font-medium transition-all duration-200"
+                  style={{
+                    backgroundColor: page === n ? "#C4281C" : "#060606",
+                    color:           page === n ? "#ffffff" : "rgba(255,255,255,0.4)",
+                  }}
+                >
+                  {n}
+                </button>
+              </div>
             ))}
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/10 text-white/40 hover:border-[#C4281C]/50 hover:text-[#C4281C] disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <ChevronRight size={16} />
-            </button>
+
+            {/* Next */}
+            <div className="ios-ring-card" style={{ display: 'inline-flex' }}>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="flex items-center justify-center w-9 h-9 rounded-[19px] text-white/40 hover:text-[#C4281C] disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-200 bg-[#060606]"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         )}
       </div>

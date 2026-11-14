@@ -56,24 +56,23 @@ export default function AboutPage() {
           </div>
         </Section>
 
-        {/* Mission / Vision / Values */}
+        {/* Mission / Vision / Values — ios-ring-card */}
         <Section className="mb-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {mvv.map((item) => (
-              <div
-                key={item.label}
-                className="bg-[#141414] rounded-2xl p-8 border border-[#C4281C]/15 hover:border-[#C4281C]/30 transition-colors duration-300"
-              >
-                <p className="text-xs font-heading font-medium uppercase tracking-widest mb-4 text-[#C4281C]">
-                  {item.label}
-                </p>
-                <p className="text-sm text-white/45 font-body leading-body">{item.text}</p>
+              <div className="ios-ring-card h-full" key={item.label}>
+                <div className="bg-[#060606] rounded-[19px] p-8 h-full">
+                  <p className="text-xs font-heading font-medium uppercase tracking-widest mb-4 text-[#C4281C]">
+                    {item.label}
+                  </p>
+                  <p className="text-sm text-white/45 font-body leading-body">{item.text}</p>
+                </div>
               </div>
             ))}
           </div>
         </Section>
 
-        {/* Specialties */}
+        {/* Specialties — ios-ring-card */}
         <Section>
           <p className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest mb-4">
             {t(translations.about.specLabel, lang)}
@@ -85,19 +84,18 @@ export default function AboutPage() {
             {translations.about.specialties.map((item, i) => {
               const Icon = iconMap[i];
               return (
-                <div
-                  key={t(item.title, lang)}
-                  className="bg-[#141414] rounded-2xl p-6 border border-white/5 hover:border-[#C4281C]/20 transition-all duration-300 group"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-[#C4281C]/10 flex items-center justify-center mb-4 group-hover:bg-[#C4281C]/20 transition-colors duration-300">
-                    <Icon size={18} className="text-[#C4281C]" />
+                <div className="ios-ring-card h-full" key={t(item.title, lang)}>
+                  <div className="bg-[#060606] rounded-[19px] p-6 group h-full">
+                    <div className="w-10 h-10 rounded-xl bg-[#C4281C]/10 flex items-center justify-center mb-4 group-hover:bg-[#C4281C]/20 transition-colors duration-300">
+                      <Icon size={18} className="text-[#C4281C]" />
+                    </div>
+                    <h3 className="text-base font-heading font-medium tracking-tight text-white mb-2 group-hover:text-[#C4281C] transition-colors duration-300">
+                      {t(item.title, lang)}
+                    </h3>
+                    <p className="text-sm text-white/35 font-body leading-body">
+                      {t(item.description, lang)}
+                    </p>
                   </div>
-                  <h3 className="text-base font-heading font-medium tracking-tight text-white mb-2 group-hover:text-[#C4281C] transition-colors duration-300">
-                    {t(item.title, lang)}
-                  </h3>
-                  <p className="text-sm text-white/35 font-body leading-body">
-                    {t(item.description, lang)}
-                  </p>
                 </div>
               );
             })}
