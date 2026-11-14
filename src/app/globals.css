@@ -218,11 +218,13 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1.5px;
     background: conic-gradient(
       from var(--light-angle, 225deg),
-      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.90)  0%,
+      rgba(255,255,255,0.00)  3%,
       rgba(255,255,255,0.00) 47%,
       rgba(255,255,255,0.90) 50%,
       rgba(255,255,255,0.00) 53%,
-      rgba(255,255,255,0.00) 100%
+      rgba(255,255,255,0.00) 97%,
+      rgba(255,255,255,0.90) 100%
     );
   }
 
@@ -233,11 +235,13 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1.5px;
     background: conic-gradient(
       from var(--light-angle, 225deg),
-      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,1.00)  0%,
+      rgba(255,255,255,0.00)  3%,
       rgba(255,255,255,0.00) 47%,
       rgba(255,255,255,1.00) 50%,
       rgba(255,255,255,0.00) 53%,
-      rgba(255,255,255,0.00) 100%
+      rgba(255,255,255,0.00) 97%,
+      rgba(255,255,255,1.00) 100%
     );
   }
 
@@ -250,11 +254,13 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1px;
     background: conic-gradient(
       from var(--light-angle, 225deg),
-      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.45)  0%,
+      rgba(255,255,255,0.00)  3%,
       rgba(255,255,255,0.00) 47%,
       rgba(255,255,255,0.45) 50%,
       rgba(255,255,255,0.00) 53%,
-      rgba(255,255,255,0.00) 100%
+      rgba(255,255,255,0.00) 97%,
+      rgba(255,255,255,0.45) 100%
     );
   }
 
@@ -268,15 +274,21 @@ h1, h2, h3, h4, h5, h6 {
     flex-shrink: 0;
     background: conic-gradient(
       from var(--light-angle, 225deg),
-      rgba(255,255,255,0.00)  0%,
+      rgba(255,255,255,0.55)  0%,
+      rgba(255,255,255,0.00)  3%,
       rgba(255,255,255,0.00) 47%,
       rgba(255,255,255,0.55) 50%,
       rgba(255,255,255,0.00) 53%,
-      rgba(255,255,255,0.00) 100%
+      rgba(255,255,255,0.00) 97%,
+      rgba(255,255,255,0.55) 100%
     );
   }
 
-  /* ── Social brand gradient hovers ──────────────────────────── */
+  /* ── Social brand gradient — always-on ──────────────────────── */
+  .bg-instagram {
+    background: linear-gradient(135deg, #405DE6 0%, #833AB4 25%, #C13584 45%, #E1306C 65%, #F77737 85%, #FCAF45 100%);
+  }
+  /* Keep hover- variant for backward compat */
   .hover-instagram:hover {
     background: linear-gradient(135deg, #405DE6 0%, #833AB4 25%, #C13584 45%, #E1306C 65%, #F77737 85%, #FCAF45 100%) !important;
     color: white !important;

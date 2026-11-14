@@ -75,44 +75,29 @@ function AnimatedHeadline({
   );
 }
 
-/* ── Typewriter eyebrow — cycles short brand phrases ── */
-function TypewriterEyebrow({ phrases }: { phrases: string[] }) {
-  const [display, setDisplay] = useState("");
-  const [phase, setPhase] = useState<"typing" | "hold" | "erasing">("typing");
+/* ── Fade eyebrow — cycles short brand phrases with fade-in/out ── */
+function FadeEyebrow({ phrases }: { phrases: string[] }) {
   const [idx, setIdx] = useState(0);
+  const [fade, setFade] = useState(1);
 
   useEffect(() => {
-    const text = phrases[idx];
-    if (phase === "typing") {
-      if (display.length < text.length) {
-        const t = setTimeout(() => setDisplay(text.slice(0, display.length + 1)), 65);
-        return () => clearTimeout(t);
-      }
-      const t = setTimeout(() => setPhase("hold"), 2200);
-      return () => clearTimeout(t);
-    }
-    if (phase === "hold") {
-      const t = setTimeout(() => setPhase("erasing"), 400);
-      return () => clearTimeout(t);
-    }
-    // erasing
-    if (display.length > 0) {
-      const t = setTimeout(() => setDisplay((d) => d.slice(0, -1)), 28);
-      return () => clearTimeout(t);
-    }
-    setIdx((i) => (i + 1) % phrases.length);
-    setPhase("typing");
-  }, [display, phase, idx, phrases]);
+    const hold = setTimeout(() => setFade(0), 3200);
+    return () => clearTimeout(hold);
+  }, [idx]);
 
   return (
-    <span className="inline-flex items-center">
-      {display}
-      <motion.span
-        animate={{ opacity: [1, 1, 0, 0] }}
-        transition={{ repeat: Infinity, duration: 1, times: [0, 0.5, 0.5, 1] }}
-        className="text-[#C4281C] ml-[1px] font-thin"
-      >|</motion.span>
-    </span>
+    <motion.span
+      animate={{ opacity: fade }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      onAnimationComplete={() => {
+        if (fade === 0) {
+          setIdx((i) => (i + 1) % phrases.length);
+          setFade(1);
+        }
+      }}
+    >
+      {phrases[idx]}
+    </motion.span>
   );
 }
 
@@ -147,9 +132,8 @@ function TypewriterHeadline({ phrases }: { phrases: string[] }) {
   }, [display, phase, idx, phrases]);
 
   return (
-    <span className="inline-flex flex-wrap items-baseline">
-      <span className="text-gradient-red">{display}</span>
-      <motion.span
+    <span>
+      <span className="text-gradient-red" style={{ display: "inline-block" }}>{display}</span><motion.span
         animate={{ opacity: [1, 1, 0, 0] }}
         transition={{ repeat: Infinity, duration: 1, times: [0, 0.5, 0.5, 1] }}
         className="text-[#C4281C] ml-[1px] font-thin"
@@ -209,7 +193,7 @@ export default function Hero() {
           >
             <span className="h-px w-8 bg-[#C4281C] flex-shrink-0" />
             <span className="text-xs font-heading font-medium text-[#C4281C] uppercase tracking-widest">
-              <TypewriterEyebrow phrases={
+              <FadeEyebrow phrases={
                 lang === "en"
                   ? ["Design · Development · Results", "Websites · Apps · Growth", "Built for your business"]
                   : ["Diseño · Desarrollo · Resultados", "Sitios web · Apps · Crecimiento", "Hecho para tu negocio"]

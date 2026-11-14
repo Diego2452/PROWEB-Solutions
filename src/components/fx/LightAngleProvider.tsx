@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 /**
  * LightAngleProvider
@@ -7,26 +7,12 @@ import { useEffect, useState } from "react";
  * Tracks mouse position (desktop) and device orientation (mobile gyroscope)
  * and updates the CSS custom property `--light-angle` on :root.
  *
- * This variable drives the conic-gradient on .ios-ring / .ios-ring-strong,
- * creating an iOS-style "lit border" that follows the light source.
+ * iOS 13+: requests DeviceOrientationEvent permission automatically on the
+ * user's very first touch interaction (no visible UI required).
  *
- * Place once inside <body> in layout.tsx — it renders nothing visible.
+ * Place once inside <body> in layout.tsx — renders nothing.
  */
 export function LightAngleProvider() {
-  const [showPrompt, setShowPrompt] = useState(false);
-
-  useEffect(() => {
-    // Check if iOS DeviceOrientationEvent permission is needed
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> })
-        .requestPermission === "function"
-    ) {
-      setShowPrompt(true);
-    }
-  }, []);
-
-  /* ─── Actual angle tracking setup (non-permission code) ─── */
   useEffect(() => {
     let currentAngle = 225;
     let targetAngle  = 225;
@@ -63,28 +49,37 @@ export function LightAngleProvider() {
     };
     document.addEventListener("mousemove", onMouse);
 
-    /* Mobile — DeviceOrientationEvent (gyroscope) */
+    /* Shared orientation handler */
     const handleOrientation = (e: DeviceOrientationEvent) => {
       const gamma = e.gamma ?? 0; // left-right tilt  (-90 … +90)
       const beta  = e.beta  ?? 0; // front-back tilt  (-180 … +180)
-      // Map tilt to a light angle: tilting right → light from right
       const angle = Math.atan2(gamma, beta - 45) * (180 / Math.PI);
       targetAngle = angle + 90;
     };
 
-    const addOrientationListener = () => {
-      window.addEventListener("deviceorientation", handleOrientation);
-    };
-
     if (typeof DeviceOrientationEvent !== "undefined") {
-      if (
-        typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> })
-          .requestPermission !== "function"
-      ) {
+      const DEO = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<string>;
+      };
+
+      if (typeof DEO.requestPermission !== "function") {
         // Android / older iOS — no permission required, attach directly
-        addOrientationListener();
+        window.addEventListener("deviceorientation", handleOrientation);
+      } else {
+        // iOS 13+ — must call requestPermission() inside a user gesture.
+        // We listen for the FIRST touchend on the document (once) and request
+        // there, keeping the call synchronous within the gesture activation window.
+        const requestOnFirstTouch = () => {
+          DEO.requestPermission!()
+            .then((perm) => {
+              if (perm === "granted") {
+                window.addEventListener("deviceorientation", handleOrientation);
+              }
+            })
+            .catch(() => { /* user denied — mouse tracking still works */ });
+        };
+        document.addEventListener("touchend", requestOnFirstTouch, { once: true });
       }
-      // iOS 13+ permission is requested via the visible UI button (see return value below)
     }
 
     return () => {
@@ -94,36 +89,6 @@ export function LightAngleProvider() {
     };
   }, []);
 
-  /* ── iOS permission prompt button ── */
-  const handlePermission = async () => {
-    setShowPrompt(false);
-    try {
-      const perm = await (
-        DeviceOrientationEvent as unknown as { requestPermission: () => Promise<string> }
-      ).requestPermission();
-      if (perm === "granted") {
-        window.addEventListener("deviceorientation", (e: DeviceOrientationEvent) => {
-          const gamma = e.gamma ?? 0;
-          const beta  = e.beta  ?? 0;
-          const angle = Math.atan2(gamma, beta - 45) * (180 / Math.PI);
-          document.documentElement.style.setProperty("--light-angle", (angle + 90).toFixed(1) + "deg");
-        });
-      }
-    } catch { /* denied — no gyroscope, mouse still works */ }
-  };
-
-  if (!showPrompt) return null;
-
-  return (
-    <button
-      onClick={handlePermission}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/70 backdrop-blur-md border border-white/[0.12] text-[11px] text-white/60 font-body whitespace-nowrap"
-      style={{ WebkitTapHighlightColor: "transparent" }}
-    >
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#C4281C] flex-shrink-0">
-        <path d="M12 2L12 6M12 18L12 22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12L6 12M18 12L22 12M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93"/>
-      </svg>
-      Toca para activar efecto de luz · Tap to enable tilt effect
-    </button>
-  );
+  // Renders nothing — pure side-effect component
+  return null;
 }
