@@ -63,12 +63,12 @@ export function LightAngleProvider() {
     };
 
     if (typeof DeviceOrientationEvent !== "undefined") {
-      // iOS 13+ requires explicit permission
+      // iOS 13+ requires explicit permission via a user gesture
       if (
         typeof (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> })
           .requestPermission === "function"
       ) {
-        // Listen for a user interaction to trigger the prompt
+        // touchstart is more immediate than click on mobile — fires on first tap
         const requestPermission = async () => {
           try {
             const perm = await (
@@ -80,9 +80,9 @@ export function LightAngleProvider() {
           } catch {
             // Permission denied or not available — fall back to mouse only
           }
-          document.removeEventListener("click", requestPermission);
+          document.removeEventListener("touchstart", requestPermission);
         };
-        document.addEventListener("click", requestPermission, { once: true });
+        document.addEventListener("touchstart", requestPermission, { once: true, passive: true });
       } else {
         // Android / older iOS — no permission required
         addOrientationListener();
