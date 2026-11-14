@@ -64,7 +64,7 @@ export default function Footer() {
 
   return (
     <footer className="relative border-t border-white/5 bg-black/60 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-3">
 
         {/* ── 3-column main grid: brand · logo · nav+contact ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -186,7 +186,7 @@ export default function Footer() {
           {/* Topo canvas on hover */}
           <div
             className="absolute inset-0 opacity-0 transition-opacity duration-700 pointer-events-none"
-            style={{ opacity: sealHovered ? 0.12 : 0 }}
+            style={{ opacity: sealHovered ? 1 : 0 }}
           >
             <TopoCanvas />
           </div>
@@ -200,19 +200,18 @@ export default function Footer() {
             }}
           />
 
-          <div className="relative z-10 grid items-center gap-5 px-5 py-5 text-center md:grid-cols-[1fr_auto_1fr] md:gap-8 md:px-8 md:text-left">
+          <div className="relative z-10 grid items-center gap-5 px-5 py-6 text-center md:grid-cols-[1fr_auto_1fr] md:gap-8 md:px-8 md:text-left">
 
             {/* Left: verified icon + text */}
             <div className="flex flex-col items-center gap-3 md:flex-row md:justify-start">
               <span
-                className="grid size-11 shrink-0 place-items-center rounded-full border border-white/[0.08] transition-all duration-500"
-                style={{ backgroundColor: sealHovered ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)" }}
+                className="grid size-11 shrink-0 place-items-center rounded-full transition-colors duration-500"
+                style={{
+                  backgroundColor: sealHovered ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.06)",
+                  color: sealHovered ? "#0a0a0a" : "rgba(255,255,255,0.7)",
+                }}
               >
-                <BadgeCheck
-                  size={22}
-                  className="transition-colors duration-500"
-                  style={{ color: sealHovered ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)" }}
-                />
+                <BadgeCheck size={22} />
               </span>
               <span className="max-w-sm">
                 <span
